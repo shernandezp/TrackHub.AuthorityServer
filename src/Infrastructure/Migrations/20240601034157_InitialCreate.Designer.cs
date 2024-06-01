@@ -12,7 +12,7 @@ using Security.Infrastructure;
 namespace Security.Infrastructure.Migrations
 {
     [DbContext(typeof(AuthorityDbContext))]
-    [Migration("20240520232644_InitialCreate")]
+    [Migration("20240601034157_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
