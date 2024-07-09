@@ -19,12 +19,12 @@ namespace Security.Infrastructure.Entities;
 public sealed class User(
     string username,
     string password,
-    string email) : BaseAuditableEntity
+    string emailAddress) : BaseAuditableEntity
 {
     public Guid UserId { get; private set; } = Guid.NewGuid();
     public string Username { get; set; } = username;
     public string Password { get; set; } = password;
-    public string EmailAddress { get; set; } = email;
+    public string EmailAddress { get; set; } = emailAddress;
     public DateTime? Verified { get; set; }
     public bool Active { get; set; }
 }
