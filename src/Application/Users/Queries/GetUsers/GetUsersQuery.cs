@@ -40,6 +40,9 @@ public class GetUsersQueryHandler(IUserReader reader, IPublisher publisher) : IR
         if (!user.Active)
             throw new AuthenticationException("User account is inactive");
 
+        if (user.LoginAttempts > 3)
+            throw new AuthenticationException("Too many failed login attempts");
+
         if (user.Password.VerifyHashedPassword(request.Password))
         {
             user.Password = string.Empty;

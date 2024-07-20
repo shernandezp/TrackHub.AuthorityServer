@@ -25,7 +25,7 @@ public sealed class LoginViewModel
     [Required(ErrorMessage = "Password is required.")]
     [StringLength(100, ErrorMessage = "Password must be at least {2} characters long.", MinimumLength = 6)]
     public string Password { get; set; } = string.Empty;
-    public string ReturnUrl { get; set; } = string.Empty;
+    public string ReturnUrl { get; set; } = "?test";
     public bool AuthenticationFailed { get; set; }
     public string AuthenticationFailedMessage { get; set; } = string.Empty;
 }
