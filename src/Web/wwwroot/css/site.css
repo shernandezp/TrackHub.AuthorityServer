@@ -1,4 +1,36 @@
 /* Resetting outline on focus */
+body {
+    background-color: #f5f5f5; /* Light grey background for the whole page */
+    font-family: 'Roboto', sans-serif; /* Consistent font for better readability */
+}
+
+h2 {
+    color: #333; /* Dark grey color for headings, ensuring they stand out */
+    font-weight: 500; /* Medium font weight for headings */
+}
+
+/* Footer Styling */
+footer {
+    text-align: center;
+    margin-top: 2rem; /* Ensures there's space between the form and the footer */
+    color: #777; /* Subtle color for the footer text */
+}
+
+small {
+    font-size: 0.875rem; /* Slightly smaller font size for copyright and other small text */
+}
+
+@media (max-width: 768px) {
+    .d-flex.flex-wrap {
+        flex-direction: column;
+    }
+
+    .d-flex.align-items-center {
+        justify-content: center;
+        width: 100%;
+    }
+}
+
 :focus {
     outline: none !important;
 }

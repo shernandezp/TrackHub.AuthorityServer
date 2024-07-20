@@ -27,4 +27,5 @@ public sealed class User(
     public string EmailAddress { get; set; } = emailAddress;
     public DateTime? Verified { get; set; }
     public bool Active { get; set; }
+    public int LoginAttempts { get; set; }
 }

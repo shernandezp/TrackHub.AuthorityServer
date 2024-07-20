@@ -24,11 +24,13 @@ public sealed class GetUsersQueryValidator : AbstractValidator<GetUsersQuery>
         RuleFor(v => v.EmailAddress)
             .EmailAddress()
             .MaximumLength(ColumnMetadata.DefaultEmailLength)
+            .NotNull()
             .NotEmpty();
 
         RuleFor(v => v.Password)
             .MinimumLength(ColumnMetadata.MinimumPasswordLength)
             .MaximumLength(ColumnMetadata.DefaultPasswordLength)
+            .NotNull()
             .NotEmpty();
     }
 }

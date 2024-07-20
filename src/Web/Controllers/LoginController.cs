@@ -20,18 +20,24 @@ using Microsoft.AspNetCore.Mvc;
 using Security.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Security.Application.Users.Queries.GetUsers;
+using System.Security.Authentication;
 
 namespace Web.Controllers;
+
 public class LoginController(ISender sender) : Controller
 {
+    // GET: /Login
+    // Returns the login view.
     [HttpGet]
     [AllowAnonymous]
     public IActionResult Index(string? returnUrl = null)
     {
         ViewData["ReturnUrl"] = returnUrl;
-        return View();
+        return View(new LoginViewModel());
     }
 
+    // POST: /Login
+    // Handles the login form submission.
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
@@ -40,23 +46,39 @@ public class LoginController(ISender sender) : Controller
         ViewData["ReturnUrl"] = model.ReturnUrl;
 
         if (!ModelState.IsValid)
-            return View(model);
-
-        var user = await sender.Send(new GetUsersQuery(model.Email, model.Password));
-        if (!string.IsNullOrEmpty(user.Username))
         {
-            var claims = new List<Claim>
-                {
-                    new(ClaimTypes.Sid, $"{user.UserId}")
-                };
-
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-            await HttpContext.SignInAsync(new ClaimsPrincipal(claimsIdentity));
-
-            return Redirect(model.ReturnUrl);
+            model.AuthenticationFailed = true;
+            model.AuthenticationFailedMessage = "Please correct the errors and try again.";
+            return View(model);
         }
 
+        try
+        {
+            // Send a query to retrieve the user based on the provided email and password.
+            var user = await sender.Send(new GetUsersQuery(model.Email, model.Password));
+
+            // Create claims for the authenticated user.
+            var claims = new List<Claim> { new(ClaimTypes.Sid, $"{user.UserId}") };
+
+            // Create a claims identity using the claims and the default authentication scheme.
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            // Sign in the user with the created claims identity.
+            await HttpContext.SignInAsync(new ClaimsPrincipal(claimsIdentity));
+
+            // Redirect the user to the return URL.
+            return Redirect(model.ReturnUrl);
+        } 
+        catch (AuthenticationException ex) 
+        {
+            model.AuthenticationFailedMessage = ex.Message;
+        } 
+        catch 
+        {
+            model.AuthenticationFailedMessage = "An error occurred while processing your request. Please try again.";
+        }
+
+        model.AuthenticationFailed = true;
         return View(model);
     }
 }

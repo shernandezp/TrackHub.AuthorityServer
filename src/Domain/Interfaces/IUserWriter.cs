@@ -13,5 +13,9 @@
 //  limitations under the License.
 //
 
-global using FluentValidation;
-global using MediatR;
+namespace Security.Domain.Interfaces;
+
+public interface IUserWriter
+{
+    Task IncreaseLoginAttemptAsync(Guid userId, CancellationToken cancellationToken);
+}

@@ -32,6 +32,6 @@ public sealed class UserReader(SecurityDbContext context) : IUserReader
                 u.EmailAddress,
                 u.Verified,
                 u.Active))
-            .FirstOrDefaultAsync(cancellationToken);
+            .SingleOrDefaultAsync(cancellationToken);
     }
 }

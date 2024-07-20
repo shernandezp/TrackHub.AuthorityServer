@@ -13,5 +13,23 @@
 //  limitations under the License.
 //
 
-global using FluentValidation;
-global using MediatR;
+using Security.Domain.Interfaces;
+using Security.Infrastructure.Entities;
+
+namespace Security.Infrastructure.Writers;
+
+public sealed class UserWriter(SecurityDbContext context) : IUserWriter
+{
+
+    // Increases the login attempts of a user asynchronously.
+    public async Task IncreaseLoginAttemptAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await context.Users.FindAsync([userId], cancellationToken)
+            ?? throw new NotFoundException(nameof(User), $"{userId}");
+
+        user.LoginAttempts++;
+
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+}

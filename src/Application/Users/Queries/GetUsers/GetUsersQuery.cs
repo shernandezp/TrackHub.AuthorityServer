@@ -17,16 +17,22 @@ using System.Security.Authentication;
 using Security.Domain.Interfaces;
 using Security.Domain.Models;
 using Common.Domain.Extensions;
+using Security.Application.Users.Events;
 
 namespace Security.Application.Users.Queries.GetUsers;
 
 public readonly record struct GetUsersQuery(string EmailAddress, string Password) : IRequest<UserVm>;
 
-public class GetUsersQueryHandler(IUserReader reader) : IRequestHandler<GetUsersQuery, UserVm>
+// Handles the GetUsersQuery and returns a UserVm
+public class GetUsersQueryHandler(IUserReader reader, IPublisher publisher) : IRequestHandler<GetUsersQuery, UserVm>
 {
+    // Handles the GetUsersQuery and returns a UserVm
     public async Task<UserVm> Handle(GetUsersQuery request, CancellationToken cancellationToken)
     {
         var user = await reader.GetUserAsync(new Domain.Records.UserLoginDto(request.EmailAddress, request.Password), cancellationToken);
+
+        if (user == default)
+            throw new AuthenticationException("Email is incorrect");
 
         if (user.Verified == null)
             throw new AuthenticationException("User account hasn't been verified");
@@ -39,6 +45,12 @@ public class GetUsersQueryHandler(IUserReader reader) : IRequestHandler<GetUsers
             user.Password = string.Empty;
             return user;
         }
+        else 
+        {
+            await publisher.Publish(new LoginAttempt.Notification(user.UserId), cancellationToken);
+            throw new AuthenticationException("Password is incorrect");
+        }
+
         throw new AuthenticationException("Email or password is incorrect");
     }
 }

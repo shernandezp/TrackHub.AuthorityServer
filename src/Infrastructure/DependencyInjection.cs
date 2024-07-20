@@ -18,6 +18,7 @@ using Security.Domain.Interfaces;
 using Security.Infrastructure;
 using Security.Infrastructure.Interfaces;
 using Security.Infrastructure.Readers;
+using Security.Infrastructure.Writers;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -34,6 +35,7 @@ public static class DependencyInjection
 
         services.AddScoped<ISecurityDbContext>(provider => provider.GetRequiredService<SecurityDbContext>());
         services.AddScoped<IUserReader, UserReader>();
+        services.AddScoped<IUserWriter, UserWriter>();
 
         return services;
     }

@@ -13,5 +13,18 @@
 //  limitations under the License.
 //
 
-global using FluentValidation;
-global using MediatR;
+using Security.Domain.Interfaces;
+
+namespace Security.Application.Users.Events;
+
+public sealed class LoginAttempt
+{
+    public readonly record struct Notification(Guid Id) : INotification
+    {
+        public class EventHandler(IUserWriter userWriter) : INotificationHandler<Notification>
+        {
+            public async Task Handle(Notification notification, CancellationToken cancellationToken)
+                => await userWriter.IncreaseLoginAttemptAsync(notification.Id, cancellationToken);
+        }
+    }
+}

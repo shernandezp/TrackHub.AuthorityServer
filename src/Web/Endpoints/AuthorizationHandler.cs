@@ -22,40 +22,46 @@ using Microsoft.AspNetCore;
 
 namespace Security.Web.Endpoints;
 
+// This class handles the authorization process.
 public sealed class AuthorizationHandler
 {
+    // This method is responsible for authorizing the request.
     public async Task Authorize(HttpContext context)
     {
+        // Retrieve the OpenID Connect request from the context.
         var request = context.GetOpenIddictServerRequest() ??
             throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
 
         // Retrieve the user principal stored in the authentication cookie.
         var result = await context.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-        // If the user principal can't be extracted, throw an exception.
+        // If the user principal can't be extracted, challenge the authentication scheme.
         if (!result.Succeeded)
         {
-            //throw new UnauthorizedAccessException("The user is unauthorized.");
             await context.ChallengeAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    new AuthenticationProperties
-                    {
-                        RedirectUri = context.Request.PathBase + context.Request.Path + QueryString.Create(
-                        context.Request.HasFormContentType ? [.. context.Request.Form] : context.Request.Query.ToList())
-                    });
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new AuthenticationProperties
+                {
+                    RedirectUri = context.Request.PathBase + context.Request.Path + QueryString.Create(
+                    context.Request.HasFormContentType ? [.. context.Request.Form] : context.Request.Query.ToList())
+                });
             return;
         }
 
+        // Create a list of claims for the user.
         var claims = new List<Claim>
-        {
-            new(OpenIddictConstants.Claims.Subject, result.Principal?.Claims.Single(x => x.Type == ClaimTypes.Sid).Value ?? string.Empty)
-        };
+            {
+                new(OpenIddictConstants.Claims.Subject, result.Principal?.Claims.Single(x => x.Type == ClaimTypes.Sid).Value ?? string.Empty)
+            };
 
+        // Create a claims identity and principal.
         var claimsIdentity = new ClaimsIdentity(claims, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
+        // Set the scopes for the claims principal.
         claimsPrincipal.SetScopes(request.GetScopes());
 
+        // Sign in the claims principal.
         if (claimsPrincipal != null)
         {
             await context.SignInAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme, claimsPrincipal);

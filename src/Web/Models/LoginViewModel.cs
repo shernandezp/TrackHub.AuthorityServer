@@ -13,11 +13,19 @@
 //  limitations under the License.
 //
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Security.Web.Models;
 
 public sealed class LoginViewModel
 {
-    public required string Email { get; set; }
-    public required string Password { get; set; }
-    public required string ReturnUrl { get; set; }
+    [Required(ErrorMessage = "Email is required.")]
+    [EmailAddress(ErrorMessage = "Invalid email address.")]
+    public string Email { get; set; } = string.Empty;
+    [Required(ErrorMessage = "Password is required.")]
+    [StringLength(100, ErrorMessage = "Password must be at least {2} characters long.", MinimumLength = 6)]
+    public string Password { get; set; } = string.Empty;
+    public string ReturnUrl { get; set; } = string.Empty;
+    public bool AuthenticationFailed { get; set; }
+    public string AuthenticationFailedMessage { get; set; } = string.Empty;
 }
