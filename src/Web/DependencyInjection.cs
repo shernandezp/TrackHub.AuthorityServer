@@ -46,7 +46,7 @@ public static class DependencyInjection
 
                 _.SetAuthorizationEndpointUris("authorize");
                 _.SetTokenEndpointUris("token");
-                _.SetRevocationEndpointUris("token/revoke");
+                _.SetRevocationEndpointUris("revoke");
                 _.SetIntrospectionEndpointUris("token/introspect");
                 _.SetLogoutEndpointUris("logout");
                 _.RegisterScopes("mobile_scope", "web_scope", "sec_scope");

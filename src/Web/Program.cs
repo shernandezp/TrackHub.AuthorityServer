@@ -84,14 +84,14 @@ app.MapPost("~/token", async (HttpContext context) =>
     return await tokenHandler.Exchange(context);
 });
 
-app.MapGet("~/logout", async (HttpContext context) =>
+app.MapPost("~/logout", async (HttpContext context) =>
 {
     await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     await context.SignOutAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme, new AuthenticationProperties
     {
         RedirectUri = "/Home"
     });
-    context.Response.Redirect("/Home");
+    return Results.Ok();
 });
 
 app.MapControllerRoute(
