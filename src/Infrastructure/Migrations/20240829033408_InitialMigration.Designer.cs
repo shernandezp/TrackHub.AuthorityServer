@@ -12,15 +12,15 @@ using Security.Infrastructure;
 namespace Security.Infrastructure.Migrations
 {
     [DbContext(typeof(AuthorityDbContext))]
-    [Migration("20240601034157_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240829033408_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.5")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
