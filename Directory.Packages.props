@@ -29,7 +29,7 @@
     <PackageVersion Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="8.0.8" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.8" />
     <PackageVersion Include="OpenIddict" Version="4.10.1" />
     <PackageVersion Include="OpenIddict.AspNetCore" Version="5.8.0" />
     <PackageVersion Include="OpenIddict.EntityFrameworkCore" Version="5.8.0" />
