@@ -22,11 +22,13 @@ using Security.Web.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(options => 
-    options.AddDefaultPolicy(builder => 
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader()));
+builder.Services.AddCors(options => options
+    .AddPolicy("AllowFrontend",
+        builder => builder
+                    .WithOrigins("https://localhost:3000")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -65,7 +67,7 @@ app.UseHealthChecks("/health");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseCors();
+app.UseCors("AllowFrontend");
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
@@ -91,6 +93,13 @@ app.MapPost("~/logout", async (HttpContext context) =>
     {
         RedirectUri = "/Home"
     });
+    return Results.Ok();
+});
+
+app.MapPost("~/revoke", async (HttpContext context) =>
+{
+    var logoffHandler = context.RequestServices.GetRequiredService<LogoffHandler>();
+    await logoffHandler.RevokeTokensAsync(context);
     return Results.Ok();
 });
 
