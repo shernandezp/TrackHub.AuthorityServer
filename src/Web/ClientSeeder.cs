@@ -70,13 +70,14 @@ public sealed class ClientSeeder(IServiceProvider serviceProvider) : IHostedServ
 
     private static async ValueTask PopulateInternalApps(IServiceScope scopeService, CancellationToken cancellationToken) 
     {
-        await PopulateInternalApp(scopeService, "mobile_client", "1b01a2f0-01ef-482b-ade2-34a251632ef7", "https://oauth.pstmn.io/v1/callback", "mobile_scope", cancellationToken);
-        await PopulateInternalApp(scopeService, "web_client", "470339fa-040e-4a43-b410-e3e4bc55c858", "http://localhost:3000/authentication/callback", "web_scope", cancellationToken);
+        await PopulatePKCEApp(scopeService, "mobile_client", "https://oauth.pstmn.io/v1/callback", "mobile_scope", cancellationToken);
+        await PopulatePKCEApp(scopeService, "web_client", "https://localhost:3000/authentication/callback", "web_scope", cancellationToken);
+        //Don't forget to store the client secret in a secure location.
+        await PopulateInternalApp(scopeService, "syncworker_client", "470339fa-040e-4a43-b410-e3e4bc55c858", cancellationToken);
     }
 
-    private static async ValueTask PopulateInternalApp(IServiceScope scopeService,
+    private static async ValueTask PopulatePKCEApp(IServiceScope scopeService,
         string clientId,
-        string clientSecret,
         string uri,
         string scope,
         CancellationToken cancellationToken)
@@ -86,8 +87,8 @@ public sealed class ClientSeeder(IServiceProvider serviceProvider) : IHostedServ
         var appDescriptor = new OpenIddictApplicationDescriptor
         {
             ClientId = clientId,
-            //ClientSecret = clientSecret,
             ClientType = OpenIddictConstants.ClientTypes.Public,
+            ApplicationType = OpenIddictConstants.ApplicationTypes.Web,
             RedirectUris = { new Uri(uri) },
             Permissions =
                     {
@@ -116,4 +117,37 @@ public sealed class ClientSeeder(IServiceProvider serviceProvider) : IHostedServ
             await appManager.UpdateAsync(client, appDescriptor, cancellationToken);
         }
     }
+
+    private static async ValueTask PopulateInternalApp(IServiceScope scopeService,
+        string clientId,
+        string clientSecret,
+        CancellationToken cancellationToken)
+    {
+        var appManager = scopeService.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
+
+        var appDescriptor = new OpenIddictApplicationDescriptor
+        {
+            ClientId = clientId,
+            ClientSecret = clientSecret,
+            ClientType = OpenIddictConstants.ClientTypes.Confidential,
+            ApplicationType = OpenIddictConstants.ApplicationTypes.Native,
+            Permissions =
+                    {
+                        OpenIddictConstants.Permissions.Endpoints.Token,
+                        OpenIddictConstants.Permissions.GrantTypes.ClientCredentials
+                    }
+        };
+
+        var client = await appManager.FindByClientIdAsync(appDescriptor.ClientId, cancellationToken);
+
+        if (client == null)
+        {
+            await appManager.CreateAsync(appDescriptor, cancellationToken);
+        }
+        else
+        {
+            await appManager.UpdateAsync(client, appDescriptor, cancellationToken);
+        }
+    }
 }
+
