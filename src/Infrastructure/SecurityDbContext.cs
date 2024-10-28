@@ -19,13 +19,8 @@ using Security.Infrastructure.Interfaces;
 
 namespace Security.Infrastructure;
 
-public class SecurityDbContext : DbContext, ISecurityDbContext
+public class SecurityDbContext(DbContextOptions<SecurityDbContext> options) : DbContext(options), ISecurityDbContext
 {
-    public SecurityDbContext(DbContextOptions<SecurityDbContext> options) : base(options)
-    {
-        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-    }
-
     public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)

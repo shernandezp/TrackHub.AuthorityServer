@@ -14,14 +14,8 @@
 //
 
 namespace Security.Infrastructure;
-public class AuthorityDbContext : DbContext
+public class AuthorityDbContext(DbContextOptions<AuthorityDbContext> options) : DbContext(options)
 {
-    public AuthorityDbContext(DbContextOptions<AuthorityDbContext> options)
-        : base(options)
-    {
-        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-    }
-
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
