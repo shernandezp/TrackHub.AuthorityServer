@@ -14,18 +14,19 @@
 //
 
 using System.ComponentModel.DataAnnotations;
+using Security.Web.Helpers;
 
 namespace Security.Web.Models;
 
 public sealed class LoginViewModel
 {
-    [Required(ErrorMessage = "Email is required.")]
-    [EmailAddress(ErrorMessage = "Invalid email address.")]
+    [Required(ErrorMessageResourceName = "EmailRequired", ErrorMessageResourceType = typeof(ValidationMessages))]
+    [EmailAddress(ErrorMessageResourceName = "InvalidEmailAddress", ErrorMessageResourceType = typeof(ValidationMessages))]
     public string Email { get; set; } = string.Empty;
-    [Required(ErrorMessage = "Password is required.")]
-    [StringLength(100, ErrorMessage = "Password must be at least {2} characters long.", MinimumLength = 6)]
+    [Required(ErrorMessageResourceName = "PasswordRequired", ErrorMessageResourceType = typeof(ValidationMessages))]
+    [StringLength(100, ErrorMessageResourceName = "PasswordLength", ErrorMessageResourceType = typeof(ValidationMessages), MinimumLength = 6)]
     public string Password { get; set; } = string.Empty;
-    public string ReturnUrl { get; set; } = "?test";
+    public string ReturnUrl { get; set; } = "?";
     public bool AuthenticationFailed { get; set; }
     public string AuthenticationFailedMessage { get; set; } = string.Empty;
 }

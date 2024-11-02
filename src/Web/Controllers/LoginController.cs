@@ -21,10 +21,11 @@ using Security.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Security.Application.Users.Queries.GetUsers;
 using System.Security.Authentication;
+using Microsoft.Extensions.Localization;
 
 namespace Web.Controllers;
 
-public class LoginController(ISender sender) : Controller
+public class LoginController(ISender sender, IStringLocalizer<LoginController> localizer) : Controller
 {
     // GET: /Login
     // Returns the login view.
@@ -48,7 +49,7 @@ public class LoginController(ISender sender) : Controller
         if (!ModelState.IsValid)
         {
             model.AuthenticationFailed = true;
-            model.AuthenticationFailedMessage = "Please correct the errors and try again.";
+            model.AuthenticationFailedMessage = localizer["CorrectErrors"];
             return View(model);
         }
 
@@ -68,17 +69,18 @@ public class LoginController(ISender sender) : Controller
 
             // Redirect the user to the return URL.
             return Redirect(model.ReturnUrl);
-        } 
-        catch (AuthenticationException ex) 
+        }
+        catch (AuthenticationException ex)
         {
-            model.AuthenticationFailedMessage = ex.Message;
-        } 
-        catch 
+            model.AuthenticationFailedMessage = localizer[ex.Message] ?? localizer["UnknownError"];
+        }
+        catch
         {
-            model.AuthenticationFailedMessage = "An error occurred while processing your request. Please try again.";
+            model.AuthenticationFailedMessage = localizer["UnknownError"];
         }
 
         model.AuthenticationFailed = true;
         return View(model);
     }
+
 }
