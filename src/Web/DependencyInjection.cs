@@ -59,9 +59,7 @@ public static class DependencyInjection
                     var certificatePassword = configuration["OpenIddict:Password"];
 
                     var bytes = File.ReadAllBytes(certificatePath ?? "");
-                    var certificate = new X509Certificate2(
-                        bytes,
-                        certificatePassword);
+                    var certificate = X509CertificateLoader.LoadPkcs12(bytes, certificatePassword);
                     _.AddSigningCertificate(certificate)
                         .AddEncryptionCertificate(certificate);
                     //TODO: Separate certificates for signing and encryption
