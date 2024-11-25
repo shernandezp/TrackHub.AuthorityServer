@@ -3,7 +3,7 @@
 | Component                 | Description                                             | Documentation                                                                 |
 |---------------------------|---------------------------------------------------------|-------------------------------------------------------------------------------|
 | OpenIDDict                | Framework for access control and authorization | [Documentación OpenIDDict](https://openiddict.com/)                           |
-| .NET Core 8               | Development platform for modern applications   | [Documentación .NET Core 8](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-8/overview) |
+| .NET Core                 | Development platform for modern applications   | [Documentación .NET Core](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-9/overview) |
 | Postgres                  | Relational database management system          | [Documentación Postgres](https://www.postgresql.org/)                         |
 | Clean Architecture Template | Template for ASP.NET clean architecture      | [GitHub - Clean Architecture Template](https://github.com/jasontaylordev/CleanArchitecture) |
 
