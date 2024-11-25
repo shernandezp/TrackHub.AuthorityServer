@@ -13,12 +13,13 @@
 //  limitations under the License.
 //
 
+using Microsoft.Extensions.DependencyInjection;
 using OpenIddict.Abstractions;
 using Security.Infrastructure;
 
-namespace Security.Web;
+namespace ClientSeeder;
 
-public sealed class ClientSeeder(IServiceProvider serviceProvider) : IHostedService
+internal class Seeder(IServiceProvider serviceProvider)
 {
     public async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -27,23 +28,21 @@ public sealed class ClientSeeder(IServiceProvider serviceProvider) : IHostedServ
         var databaseContext = scope.ServiceProvider.GetRequiredService<AuthorityDbContext>();
         databaseContext.Database.EnsureCreated();
 
-        await PopulateScopes(scope, cancellationToken);
+        var clients = Clients.LoadFromFile("clients.json");
 
-        await PopulateInternalApps(scope, cancellationToken);
+        await PopulateScopes(scope, clients.Scopes, cancellationToken);
+        await PopulateInternalApps(scope, clients.PKCEClients, clients.ServiceClients, cancellationToken);
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
+    private static async ValueTask PopulateScopes(IServiceScope scope, Scope[] scopes, CancellationToken cancellationToken)
     {
-        return Task.CompletedTask;
+        foreach (var scopeItem in scopes)
+        {
+            await PopulateScope(scope, scopeItem.Name, scopeItem.Resource, cancellationToken);
+        }
     }
 
-    private static async ValueTask PopulateScopes(IServiceScope scope, CancellationToken cancellationToken) 
-    {
-        await PopulateScope(scope, "mobile_scope", "mobile_resource", cancellationToken);
-        await PopulateScope(scope, "web_scope", "web_resource", cancellationToken);
-    }
-
-    private static async ValueTask PopulateScope(IServiceScope scope, 
+    private static async ValueTask PopulateScope(IServiceScope scope,
         string scopeName,
         string resource,
         CancellationToken cancellationToken)
@@ -68,12 +67,17 @@ public sealed class ClientSeeder(IServiceProvider serviceProvider) : IHostedServ
         }
     }
 
-    private static async ValueTask PopulateInternalApps(IServiceScope scopeService, CancellationToken cancellationToken) 
+    private static async ValueTask PopulateInternalApps(IServiceScope scopeService, PKCEClient[] pkceClients, ServiceClient[] serviceClients, CancellationToken cancellationToken)
     {
-        await PopulatePKCEApp(scopeService, "mobile_client", "https://oauth.pstmn.io/v1/callback", "mobile_scope", cancellationToken);
-        await PopulatePKCEApp(scopeService, "web_client", "https://localhost:3000/authentication/callback", "web_scope", cancellationToken);
-        //Don't forget to store the client secret in a secure location.
-        await PopulateInternalApp(scopeService, "syncworker_client", "470339fa-040e-4a43-b410-e3e4bc55c858", cancellationToken);
+        foreach (var pkceClient in pkceClients)
+        {
+            await PopulatePKCEApp(scopeService, pkceClient.ClientId, pkceClient.Uri, pkceClient.Scope, cancellationToken);
+        }
+
+        foreach (var serviceClient in serviceClients)
+        {
+            await PopulateInternalApp(scopeService, serviceClient.ClientId, serviceClient.ClientSecret, cancellationToken);
+        }
     }
 
     private static async ValueTask PopulatePKCEApp(IServiceScope scopeService,
@@ -150,4 +154,3 @@ public sealed class ClientSeeder(IServiceProvider serviceProvider) : IHostedServ
         }
     }
 }
-

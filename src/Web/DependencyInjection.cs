@@ -14,6 +14,7 @@
 //
 
 using System.Security.Cryptography.X509Certificates;
+using Ardalis.GuardClauses;
 using Quartz;
 using Security.Infrastructure;
 
@@ -23,6 +24,9 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddOpenIdDictServices(this IServiceCollection services, IConfiguration configuration)
     {
+        var scopes = configuration["OpenIddict:Scopes"];
+        Guard.Against.Null(scopes, message: $"Scopes for OpenIddict not loaded");
+
         services.AddQuartz(options =>
         {
             options.UseSimpleTypeLoader();
@@ -49,7 +53,7 @@ public static class DependencyInjection
                 _.SetRevocationEndpointUris("revoke");
                 _.SetIntrospectionEndpointUris("token/introspect");
                 _.SetLogoutEndpointUris("logout");
-                _.RegisterScopes("mobile_scope", "web_scope", "sec_scope");
+                _.RegisterScopes(scopes.Split(','));
 
 #if DEBUG
                     _.AddDevelopmentEncryptionCertificate()

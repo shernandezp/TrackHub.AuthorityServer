@@ -1,0 +1,35 @@
+{
+  "scopes": [
+    {
+      "name": "mobile_scope",
+      "resource": "mobile_resource"
+    },
+    {
+      "name": "web_scope",
+      "resource": "web_resource"
+    }
+  ],
+  "PKCEClients": [
+    {
+      "clientId": "postman_client",
+      "uri": "https://oauth.pstmn.io/v1/callback",
+      "scope": "web_scope"
+    },
+    {
+      "clientId": "mobile_client",
+      "uri": "https://oauth.pstmn.io/v1/callback",
+      "scope": "mobile_scope"
+    },
+    {
+      "clientId": "web_client",
+      "uri": "https://localhost:3000/authentication/callback",
+      "scope": "web_scope"
+    }
+  ],
+  "serviceClients": [
+    {
+      "clientId": "syncworker_client",
+      "clientSecret": "470339fa-040e-4a43-b410-e3e4bc55c858"
+    }
+  ]
+}

@@ -14,6 +14,7 @@
 //
 
 using System.Globalization;
+using Ardalis.GuardClauses;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Localization;
@@ -21,13 +22,15 @@ using OpenIddict.Server.AspNetCore;
 using Security.Infrastructure;
 using Security.Web;
 using Security.Web.Endpoints;
-
 var builder = WebApplication.CreateBuilder(args);
+
+var allowedCORSOrigins = builder.Configuration.GetSection("AllowedCorsOrigins").Get<string>();
+Guard.Against.Null(allowedCORSOrigins, message: $"Allowed Origins configuration for CORS not loaded");
 
 builder.Services.AddCors(options => options
     .AddPolicy("AllowFrontend",
         builder => builder
-                    .WithOrigins("https://localhost:3000")
+                    .WithOrigins(allowedCORSOrigins)
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials()));
@@ -65,7 +68,6 @@ builder.Services.AddOpenIdDictDbContext(builder.Configuration);
 builder.Services.AddOpenIdDictServices(builder.Configuration);
 
 builder.Services.AddRazorPages();
-builder.Services.AddHostedService<ClientSeeder>();
 
 // Add HealthChecks
 builder.Services.AddHealthChecks()
@@ -75,12 +77,19 @@ builder.Services.AddHealthChecks()
 builder.Services.AddScoped<AuthorizationHandler>();
 builder.Services.AddScoped<TokenHandler>();
 
+// Configure HSTS
+builder.Services.AddHsts(options =>
+{
+    options.MaxAge = TimeSpan.FromDays(365 * 2);
+    options.IncludeSubDomains = true;
+    options.Preload = true;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
