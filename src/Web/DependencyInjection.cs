@@ -59,17 +59,36 @@ public static class DependencyInjection
                     _.AddDevelopmentEncryptionCertificate()
                         .AddDevelopmentSigningCertificate();
 #else
-                    var certificatePath = configuration["OpenIddict:Path"];
-                    var certificatePassword = configuration["OpenIddict:Password"];
+                X509Certificate2? certificate = null;
+                var loadCertFromFile = configuration.GetValue<bool>("OpenIddict:LoadCertFromFile");
+                if (loadCertFromFile)
+                {
+                    var certificatePath = configuration.GetValue<string>("OpenIddict:Path");
+                    var certificatePassword = configuration.GetValue<string>("OpenIddict:Password");
 
                     var bytes = File.ReadAllBytes(certificatePath ?? "");
-                    var certificate = X509CertificateLoader.LoadPkcs12(bytes, certificatePassword);
-                    _.AddSigningCertificate(certificate)
+                    certificate = X509CertificateLoader.LoadPkcs12(bytes, certificatePassword);
+                }
+                else
+                {
+                    var thumbprint = configuration.GetValue<string>("OpenIddict:Thumbprint");
+                    Guard.Against.Null(thumbprint, message: $"Thumbprint for OpenIddict not found");
+                    var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+                    store.Open(OpenFlags.ReadOnly);
+                    var certificates = store.Certificates.Find(
+                        X509FindType.FindByThumbprint,
+                        thumbprint,
+                        false);
+                    certificate = certificates.Count > 0 ? certificates[0] : null;
+                }
+                Guard.Against.Null(certificate, message: $"Certificate for OpenIddict not found");
+
+                _.AddSigningCertificate(certificate)
                         .AddEncryptionCertificate(certificate);
                     //TODO: Separate certificates for signing and encryption
 #endif
 
-                ////disable access token payload encryption
+                //disable access token payload encryption
                 _.DisableAccessTokenEncryption();
                 _.UseAspNetCore()
                     .EnableTokenEndpointPassthrough()
