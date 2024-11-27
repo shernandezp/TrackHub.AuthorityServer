@@ -478,3 +478,4 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+/src/Web/Properties/ServiceDependencies/Track-Hub - Web Deploy/profile.arm.json
