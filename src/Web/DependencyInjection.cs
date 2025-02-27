@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 Sergio Hernandez. All rights reserved.
+﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ public static class DependencyInjection
                 _.SetTokenEndpointUris("token");
                 _.SetRevocationEndpointUris("revoke");
                 _.SetIntrospectionEndpointUris("token/introspect");
-                _.SetLogoutEndpointUris("logout");
+                _.SetEndSessionEndpointUris("logout");
                 _.RegisterScopes(scopes.Split(','));
 
 #if DEBUG
@@ -92,7 +92,7 @@ public static class DependencyInjection
                 _.DisableAccessTokenEncryption();
                 _.UseAspNetCore()
                     .EnableTokenEndpointPassthrough()
-                    .EnableLogoutEndpointPassthrough()
+                    .EnableEndSessionEndpointPassthrough()
                     .EnableAuthorizationEndpointPassthrough();
             }
         );
