@@ -13,20 +13,22 @@
 //  limitations under the License.
 //
 
-using Common.Infrastructure;
+using Security.Domain.Interfaces;
+using Security.Domain.Models;
 
-namespace Security.Infrastructure.Entities;
-public sealed class User(
-    string username,
-    string password,
-    string emailAddress) : BaseAuditableEntity
+namespace Security.Infrastructure.Readers;
+
+public sealed class ClientReader(SecurityDbContext context) : IClientReader
 {
-    public Guid UserId { get; private set; } = Guid.NewGuid();
-    public string Username { get; set; } = username;
-    public string Password { get; set; } = password;
-    public string EmailAddress { get; set; } = emailAddress;
-    public DateTime? Verified { get; set; }
-    public bool Active { get; set; }
-    public int LoginAttempts { get; set; }
-    public Client? Client { get; set; }
+    public async Task<ClientVm> GetClientAsync(string name, CancellationToken cancellationToken)
+    {
+        return await context.Clients
+            .AsNoTracking()
+            .Where(c => c.Name.Equals(name))
+            .Select(c => new ClientVm(
+                c.ClientId,
+                c.UserId,
+                c.Name))
+            .SingleOrDefaultAsync(cancellationToken);
+    }
 }

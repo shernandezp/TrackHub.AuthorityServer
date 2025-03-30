@@ -19,4 +19,5 @@ namespace Security.Infrastructure.Interfaces;
 public interface ISecurityDbContext
 {
     DbSet<User> Users { get; set; }
+    DbSet<Client> Clients { get; set; }
 }

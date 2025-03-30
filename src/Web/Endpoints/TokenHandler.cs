@@ -18,11 +18,12 @@ using OpenIddict.Server.AspNetCore;
 using OpenIddict.Abstractions;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
+using Security.Domain.Interfaces;
 
-namespace Security.Web.Endpoints;
+namespace Web.Endpoints;
 
 // Responsible for handling token exchange requests.
-public sealed class TokenHandler()
+public sealed class TokenHandler(IClientReader clientReader)
 {
     /// <summary>
     /// Handles the token exchange request.
@@ -64,10 +65,17 @@ public sealed class TokenHandler()
                 return Results.Unauthorized();
             }
 
+            //Retrieve the user linked to the client if available
+            var client = await clientReader.GetClientAsync(request.ClientId, context.RequestAborted);
+            var subject = client != default && client.UserId.HasValue ? client.UserId.Value.ToString() : request.ClientId;
+
             // Create a new claims principal
             var identity = new ClaimsIdentity(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-            identity.AddClaim(OpenIddictConstants.Claims.Subject, "service",
+            identity.AddClaim(OpenIddictConstants.Claims.Subject, subject,
                 OpenIddictConstants.Destinations.AccessToken);
+
+            identity.AddClaim(new Claim(ClaimTypes.Role, "service")
+                .SetDestinations(OpenIddictConstants.Destinations.AccessToken));
 
             var principal = new ClaimsPrincipal(identity);
 

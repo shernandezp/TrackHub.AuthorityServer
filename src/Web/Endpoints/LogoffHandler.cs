@@ -16,7 +16,7 @@
 using OpenIddict.Abstractions;
 using System.Security.Claims;
 
-namespace Security.Web.Endpoints;
+namespace Web.Endpoints;
 
 public sealed class LogoffHandler(IOpenIddictTokenManager tokenManager)
 {
