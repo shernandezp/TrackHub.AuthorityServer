@@ -20,7 +20,7 @@ using OpenIddict.Server.AspNetCore;
 using System.Security.Claims;
 using Microsoft.AspNetCore;
 
-namespace Security.Web.Endpoints;
+namespace Web.Endpoints;
 
 // This class handles the authorization process.
 public sealed class AuthorizationHandler

@@ -21,7 +21,8 @@ using Microsoft.AspNetCore.Localization;
 using OpenIddict.Server.AspNetCore;
 using Security.Infrastructure;
 using Security.Web;
-using Security.Web.Endpoints;
+using Web.Endpoints;
+
 var builder = WebApplication.CreateBuilder(args);
 
 var allowedCORSOrigins = builder.Configuration.GetSection("AllowedCorsOrigins").Get<string>();

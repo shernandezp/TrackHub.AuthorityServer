@@ -34,6 +34,7 @@ public static class DependencyInjection
             options.UseNpgsql(connectionString, o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
 
         services.AddScoped<ISecurityDbContext>(provider => provider.GetRequiredService<SecurityDbContext>());
+        services.AddScoped<IClientReader, ClientReader>();
         services.AddScoped<IUserReader, UserReader>();
         services.AddScoped<IUserWriter, UserWriter>();
 
