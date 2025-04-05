@@ -4,7 +4,6 @@
     <AssemblyName>Security.Domain</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MediatR" />
     <PackageReference Include="TrackHubCommon.Domain" />
   </ItemGroup>
 </Project>
