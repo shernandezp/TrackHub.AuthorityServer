@@ -13,16 +13,19 @@
     {
       "clientId": "postman_client",
       "uri": "https://oauth.pstmn.io/v1/callback",
+      "postLogoutUri": "https://oauth.pstmn.io/v1/callback",
       "scope": "web_scope"
     },
     {
       "clientId": "mobile_client",
-      "uri": "https://oauth.pstmn.io/v1/callback",
+      "uri": "trackhubmobile://callback",
+      "postLogoutUri": "trackhubmobile://callback",
       "scope": "mobile_scope"
     },
     {
       "clientId": "web_client",
       "uri": "https://localhost:3000/authentication/callback",
+      "postLogoutUri": "https://localhost:3000/authentication/callback",
       "scope": "web_scope"
     }
   ],

@@ -45,6 +45,7 @@ internal class PKCEClient
 {
     public string ClientId { get; set; } = "";
     public string Uri { get; set; } = "";
+    public string PostLogoutUri { get; set; } = "";
     public string Scope { get; set; } = "";
 }
 
