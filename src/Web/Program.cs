@@ -123,11 +123,17 @@ app.MapPost("~/token", async (HttpContext context) =>
 app.MapPost("~/logout", async (HttpContext context) =>
 {
     await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-    await context.SignOutAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme, new AuthenticationProperties
-    {
-        RedirectUri = "/Home"
-    });
+    await context.SignOutAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     return Results.Ok();
+});
+
+app.MapGet("~/logout", async (HttpContext context) =>
+{
+    await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    await context.SignOutAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+
+    var postLogoutRedirectUri = context.Request.Query["post_logout_redirect_uri"].ToString();
+    return Results.Redirect(postLogoutRedirectUri);
 });
 
 app.MapPost("~/revoke", async (HttpContext context) =>

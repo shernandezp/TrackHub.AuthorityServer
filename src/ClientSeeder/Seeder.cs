@@ -71,7 +71,7 @@ internal class Seeder(IServiceProvider serviceProvider)
     {
         foreach (var pkceClient in pkceClients)
         {
-            await PopulatePKCEApp(scopeService, pkceClient.ClientId, pkceClient.Uri, pkceClient.Scope, cancellationToken);
+            await PopulatePKCEApp(scopeService, pkceClient.ClientId, pkceClient.Uri, pkceClient.PostLogoutUri, pkceClient.Scope, cancellationToken);
         }
 
         foreach (var serviceClient in serviceClients)
@@ -83,6 +83,7 @@ internal class Seeder(IServiceProvider serviceProvider)
     private static async ValueTask PopulatePKCEApp(IServiceScope scopeService,
         string clientId,
         string uri,
+        string postLogoutUri,
         string scope,
         CancellationToken cancellationToken)
     {
@@ -94,12 +95,14 @@ internal class Seeder(IServiceProvider serviceProvider)
             ClientType = OpenIddictConstants.ClientTypes.Public,
             ApplicationType = OpenIddictConstants.ApplicationTypes.Web,
             RedirectUris = { new Uri(uri) },
+            PostLogoutRedirectUris = { new Uri(postLogoutUri) },
             Permissions =
                     {
                         OpenIddictConstants.Permissions.Endpoints.Authorization,
                         OpenIddictConstants.Permissions.Endpoints.Token,
                         OpenIddictConstants.Permissions.Endpoints.Introspection,
                         OpenIddictConstants.Permissions.Endpoints.Revocation,
+                        OpenIddictConstants.Permissions.Endpoints.EndSession,
 
                         OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode,
                         OpenIddictConstants.Permissions.GrantTypes.ClientCredentials,
