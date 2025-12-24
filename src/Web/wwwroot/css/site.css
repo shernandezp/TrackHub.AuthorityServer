@@ -20,17 +20,6 @@ small {
     font-size: 0.875rem; /* Slightly smaller font size for copyright and other small text */
 }
 
-@media (max-width: 768px) {
-    .d-flex.flex-wrap {
-        flex-direction: column;
-    }
-
-    .d-flex.align-items-center {
-        justify-content: center;
-        width: 100%;
-    }
-}
-
 :focus {
     outline: none !important;
 }
@@ -87,4 +76,87 @@ form {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 20px;
     border-radius: 10px;
+}
+
+.login-divider {
+    width: 1px;
+    background-color: #dee2e6;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 767.98px) {
+    body {
+        display: flex;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+    }
+
+    .container {
+        margin-top: 0 !important;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .card {
+        padding: 0;
+        border-radius: 10px;
+        margin: 0;
+        width: 100%;
+    }
+
+    .card-body {
+        padding: 0 !important;
+    }
+
+    .d-flex.flex-column > div:first-child {
+        flex: none !important;
+        max-height: 300px;
+        min-height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+    }
+
+    .d-flex.flex-column > div:first-child img {
+        border-radius: 10px 10px 0 0;
+        object-fit: contain !important;
+        max-height: 100%;
+        width: auto !important;
+        height: auto !important;
+    }
+
+    .login-divider {
+        display: none;
+    }
+
+    .d-flex.flex-column > div:last-child {
+        flex: none !important;
+        padding: 25px 20px 30px 20px !important;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+        margin-top: 0;
+        margin-bottom: 1.25rem !important;
+    }
+
+    .form-control {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    .btn {
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
 }
