@@ -1,14 +1,76 @@
-﻿## Components and Resources
+﻿# TrackHub Authorization Service
+
+## Key Features
+
+- **OAuth 2.0 & OpenID Connect**: Full compliance with industry-standard authentication protocols using OpenIdDict
+- **Authorization Code Flow with PKCE**: Secure authentication for SPA and mobile applications
+- **Client Credentials Flow**: Machine-to-machine authentication for backend microservices
+- **Token Management**: JWT token generation, validation, and revocation capabilities
+- **Multi-Client Support**: Configurable OAuth clients for web, mobile, and service applications
+- **Clean Architecture**: Layered architecture promoting maintainability and testability
+- **PostgreSQL Integration**: Secure user credential storage with BCrypt password hashing
+- **Customizable Login UI**: ASP.NET-based login interface with branding support
+
+---
+
+## Quick Start
+
+### Prerequisites
+
+- .NET 10.0 SDK
+- PostgreSQL 14+
+- SSL Certificate (self-signed for development, CA-issued for production)
+
+### Installation
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/shernandezp/TrackHub.AuthorityServer.git
+   cd TrackHub.AuthorityServer
+   ```
+
+2. **Configure the database connection** in `appsettings.json`:
+   ```json
+   {
+     "ConnectionStrings": {
+       "SecurityConnection": "Host=localhost;Database=trackhub_security;Username=postgres;Password=yourpassword"
+     }
+   }
+   ```
+
+3. **Generate a self-signed certificate** (development only):
+   ```powershell
+   $cert = New-SelfSignedCertificate -DnsName "localhost" -CertStoreLocation "Cert:\CurrentUser\My"
+   $password = ConvertTo-SecureString -String "openiddict" -Force -AsPlainText
+   Export-PfxCertificate -Cert $cert -FilePath "certificate.pfx" -Password $password
+   ```
+
+4. **Run database migrations**:
+   ```bash
+   dotnet ef database update
+   ```
+
+5. **Start the application**:
+   ```bash
+   dotnet run --project src/Web
+   ```
+
+6. **Access the login page** at `https://localhost:5001`
+
+---
+
+## Components and Resources
 
 | Component                 | Description                                             | Documentation                                                                 |
 |---------------------------|---------------------------------------------------------|-------------------------------------------------------------------------------|
-| OpenIDDict                | Framework for access control and authorization | [Documentación OpenIDDict](https://openiddict.com/)                           |
-| .NET Core                 | Development platform for modern applications   | [Documentación .NET Core](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-9/overview) |
-| Postgres                  | Relational database management system          | [Documentación Postgres](https://www.postgresql.org/)                         |
+| OpenIDDict                | Framework for access control and authorization | [OpenIDDict Documentation](https://openiddict.com/)                           |
+| .NET Core                 | Development platform for modern applications   | [.NET Core Documentation](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-9/overview) |
+| Postgres                  | Relational database management system          | [Postgres Documentation](https://www.postgresql.org/)                         |
 | Clean Architecture Template | Template for ASP.NET clean architecture      | [GitHub - Clean Architecture Template](https://github.com/jasontaylordev/CleanArchitecture) |
 
+---
 
-# TrackHub Authorization Service
+## Overview
 
 The TrackHub Authorization Service leverages OpenIdDict for access control across applications and services. The following sections describe the authentication methods and system configuration.
 
