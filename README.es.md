@@ -1,4 +1,65 @@
-﻿## Componentes y Recursos Utilizados
+﻿# Servicio de Autorización de TrackHub
+
+## Características Principales
+
+- **OAuth 2.0 y OpenID Connect**: Cumplimiento total con protocolos de autenticación estándar de la industria usando OpenIdDict
+- **Flujo de Código de Autorización con PKCE**: Autenticación segura para aplicaciones SPA y móviles
+- **Flujo de Credenciales de Cliente**: Autenticación máquina a máquina para microservicios backend
+- **Gestión de Tokens**: Capacidades de generación, validación y revocación de tokens JWT
+- **Soporte Multi-Cliente**: Clientes OAuth configurables para aplicaciones web, móviles y de servicios
+- **Arquitectura Limpia**: Arquitectura en capas que promueve la mantenibilidad y la capacidad de prueba
+- **Integración PostgreSQL**: Almacenamiento seguro de credenciales de usuario con hash de contraseñas BCrypt
+- **UI de Login Personalizable**: Interfaz de inicio de sesión basada en ASP.NET con soporte para personalización de marca
+
+---
+
+## Inicio Rápido
+
+### Requisitos Previos
+
+- .NET 10.0 SDK
+- PostgreSQL 14+
+- Certificado SSL (autofirmado para desarrollo, emitido por CA para producción)
+
+### Instalación
+
+1. **Clonar el repositorio**:
+   ```bash
+   git clone https://github.com/shernandezp/TrackHub.AuthorityServer.git
+   cd TrackHub.AuthorityServer
+   ```
+
+2. **Configurar la conexión a la base de datos** en `appsettings.json`:
+   ```json
+   {
+     "ConnectionStrings": {
+       "SecurityConnection": "Host=localhost;Database=trackhub_security;Username=postgres;Password=yourpassword"
+     }
+   }
+   ```
+
+3. **Generar un certificado autofirmado** (solo desarrollo):
+   ```powershell
+   $cert = New-SelfSignedCertificate -DnsName "localhost" -CertStoreLocation "Cert:\CurrentUser\My"
+   $password = ConvertTo-SecureString -String "openiddict" -Force -AsPlainText
+   Export-PfxCertificate -Cert $cert -FilePath "certificate.pfx" -Password $password
+   ```
+
+4. **Ejecutar las migraciones de la base de datos**:
+   ```bash
+   dotnet ef database update
+   ```
+
+5. **Iniciar la aplicación**:
+   ```bash
+   dotnet run --project src/Web
+   ```
+
+6. **Acceder a la página de login** en `https://localhost:5001`
+
+---
+
+## Componentes y Recursos Utilizados
 
 | Componente                | Descripción                                             | Documentación                                                                 |
 |---------------------------|---------------------------------------------------------|-------------------------------------------------------------------------------|
@@ -7,8 +68,9 @@
 | Postgres                  | Sistema de gestión de bases de datos relacional         | [Documentación Postgres](https://www.postgresql.org/)                         |
 | Clean Architecture Template | Plantilla para arquitectura limpia en ASP.NET        | [GitHub - Clean Architecture Template](https://github.com/jasontaylordev/CleanArchitecture) |
 
+---
 
-# Servicio de Autorización de TrackHub
+## Descripción General
 
 El servicio de autorización de TrackHub está construido sobre **OpenIdDict** para el control de acceso a aplicaciones y servicios. A continuación, se describen los métodos de autenticación utilizados y la configuración del sistema.
 
