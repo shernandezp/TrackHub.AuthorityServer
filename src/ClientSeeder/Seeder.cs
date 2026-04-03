@@ -76,7 +76,7 @@ internal class Seeder(IServiceProvider serviceProvider)
 
         foreach (var serviceClient in serviceClients)
         {
-            await PopulateInternalApp(scopeService, serviceClient.ClientId, serviceClient.ClientSecret, cancellationToken);
+            await PopulateInternalApp(scopeService, serviceClient.ClientId, serviceClient.ClientSecret, serviceClient.Scope, cancellationToken);
         }
     }
 
@@ -128,6 +128,7 @@ internal class Seeder(IServiceProvider serviceProvider)
     private static async ValueTask PopulateInternalApp(IServiceScope scopeService,
         string clientId,
         string clientSecret,
+        string scope,
         CancellationToken cancellationToken)
     {
         var appManager = scopeService.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
@@ -144,6 +145,10 @@ internal class Seeder(IServiceProvider serviceProvider)
                         OpenIddictConstants.Permissions.GrantTypes.ClientCredentials
                     }
         };
+        if (!string.IsNullOrEmpty(scope))
+        {
+            appDescriptor.Permissions.Add(OpenIddictConstants.Permissions.Prefixes.Scope + scope);
+        }
 
         var client = await appManager.FindByClientIdAsync(appDescriptor.ClientId, cancellationToken);
 

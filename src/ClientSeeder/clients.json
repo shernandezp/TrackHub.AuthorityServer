@@ -2,11 +2,15 @@
   "scopes": [
     {
       "name": "mobile_scope",
-      "resource": "mobile_resource"
+      "resource": "trackhub_api"
     },
     {
       "name": "web_scope",
-      "resource": "web_resource"
+      "resource": "trackhub_api"
+    },
+    {
+      "name": "service_scope",
+      "resource": "trackhub_api"
     }
   ],
   "PKCEClients": [
@@ -32,7 +36,8 @@
   "serviceClients": [
     {
       "clientId": "syncworker_client",
-      "clientSecret": "470339fa-040e-4a43-b410-e3e4bc55c858"
+      "clientSecret": "470339fa-040e-4a43-b410-e3e4bc55c858",
+      "scope": "service_scope"
     }
   ]
 }

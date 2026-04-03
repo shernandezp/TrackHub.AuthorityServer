@@ -4,24 +4,24 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.4" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.5" />
     <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.4" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.4" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.4" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.5" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.5" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
-    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
     <PackageVersion Include="OpenIddict" Version="4.10.1" />
-    <PackageVersion Include="OpenIddict.AspNetCore" Version="7.3.0" />
-    <PackageVersion Include="OpenIddict.EntityFrameworkCore" Version="7.3.0" />
-    <PackageVersion Include="OpenIddict.Quartz" Version="7.3.0" />
-    <PackageVersion Include="OpenIddict.Server" Version="7.3.0" />
-    <PackageVersion Include="Quartz.Extensions.Hosting" Version="3.16.1" />
+    <PackageVersion Include="OpenIddict.AspNetCore" Version="7.4.0" />
+    <PackageVersion Include="OpenIddict.EntityFrameworkCore" Version="7.4.0" />
+    <PackageVersion Include="OpenIddict.Quartz" Version="7.4.0" />
+    <PackageVersion Include="OpenIddict.Server" Version="7.4.0" />
+    <PackageVersion Include="Quartz.Extensions.Hosting" Version="3.17.1" />
     <PackageVersion Include="System.Linq.Async" Version="7.0.0" />
-    <PackageVersion Include="TrackHubCommon.Application" Version="1.2.10" />
-    <PackageVersion Include="TrackHubCommon.Domain" Version="1.2.10" />
-    <PackageVersion Include="TrackHubCommon.Infrastructure" Version="1.2.10" />
-    <PackageVersion Include="TrackHubCommon.Web" Version="1.2.10" />
+    <PackageVersion Include="TrackHubCommon.Application" Version="1.2.14" />
+    <PackageVersion Include="TrackHubCommon.Domain" Version="1.2.14" />
+    <PackageVersion Include="TrackHubCommon.Infrastructure" Version="1.2.14" />
+    <PackageVersion Include="TrackHubCommon.Web" Version="1.2.14" />
   </ItemGroup>
 </Project>

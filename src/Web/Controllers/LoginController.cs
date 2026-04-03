@@ -17,15 +17,16 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
-using Security.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Security.Application.Users.Queries.GetUsers;
 using System.Security.Authentication;
 using Microsoft.Extensions.Localization;
+using Common.Application.Exceptions;
+using Web.Models;
 
 namespace Web.Controllers;
 
-public class LoginController(ISender sender, IStringLocalizer<LoginController> localizer) : Controller
+public class LoginController(ISender sender, IStringLocalizer<LoginController> localizer, ILogger<LoginController> logger) : Controller
 {
     // GET: /Login
     // Returns the login view.
@@ -74,8 +75,14 @@ public class LoginController(ISender sender, IStringLocalizer<LoginController> l
         {
             model.AuthenticationFailedMessage = localizer[ex.Message] ?? localizer["UnknownError"];
         }
-        catch
+        catch (ValidationException ex)
         {
+            var messages = ex.Errors.SelectMany(e => e.Value);
+            model.AuthenticationFailedMessage = string.Join(" ", messages);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error during login attempt for {Email}", model.Email);
             model.AuthenticationFailedMessage = localizer["UnknownError"];
         }
 

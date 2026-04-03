@@ -82,6 +82,10 @@ public sealed class TokenHandler(IClientReader clientReader)
             // Set the scopes granted to the client application
             principal.SetScopes(request.GetScopes());
 
+            // Resolve and set resources (audience) from the granted scopes.
+            var scopeManager = context.RequestServices.GetRequiredService<IOpenIddictScopeManager>();
+            principal.SetResources(await scopeManager.ListResourcesAsync(principal.GetScopes()).ToListAsync());
+
             // Return the result based on the claims principal
             return Results.SignIn(principal, properties: null, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
