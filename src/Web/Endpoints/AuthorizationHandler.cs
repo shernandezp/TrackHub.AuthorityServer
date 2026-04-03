@@ -61,6 +61,10 @@ public sealed class AuthorizationHandler
         // Set the scopes for the claims principal.
         claimsPrincipal.SetScopes(request.GetScopes());
 
+        // Resolve and set resources (audience) from the granted scopes.
+        var scopeManager = context.RequestServices.GetRequiredService<IOpenIddictScopeManager>();
+        claimsPrincipal.SetResources(await scopeManager.ListResourcesAsync(claimsPrincipal.GetScopes()).ToListAsync());
+
         // Sign in the claims principal.
         if (claimsPrincipal != null)
         {

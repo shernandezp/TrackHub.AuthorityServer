@@ -16,7 +16,7 @@
 using System.ComponentModel.DataAnnotations;
 using Security.Web.Helpers;
 
-namespace Security.Web.Models;
+namespace Web.Models;
 
 public sealed class LoginViewModel
 {
@@ -24,7 +24,7 @@ public sealed class LoginViewModel
     [EmailAddress(ErrorMessageResourceName = "InvalidEmailAddress", ErrorMessageResourceType = typeof(ValidationMessages))]
     public string Email { get; set; } = string.Empty;
     [Required(ErrorMessageResourceName = "PasswordRequired", ErrorMessageResourceType = typeof(ValidationMessages))]
-    [StringLength(100, ErrorMessageResourceName = "PasswordLength", ErrorMessageResourceType = typeof(ValidationMessages), MinimumLength = 6)]
+    [StringLength(100, ErrorMessageResourceName = "PasswordLength", ErrorMessageResourceType = typeof(ValidationMessages), MinimumLength = 8)]
     public string Password { get; set; } = string.Empty;
     public string ReturnUrl { get; set; } = "?";
     public bool AuthenticationFailed { get; set; }
