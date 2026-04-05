@@ -5,8 +5,8 @@
 - **OAuth 2.0 & OpenID Connect**: Full compliance with industry-standard authentication protocols using OpenIdDict
 - **Authorization Code Flow with PKCE**: Secure authentication for SPA and mobile applications
 - **Client Credentials Flow**: Machine-to-machine authentication for backend microservices
-- **Token Management**: JWT token generation, validation, and revocation capabilities
-- **Multi-Client Support**: Configurable OAuth clients for web, mobile, and service applications
+- **Token Management**: JWT token generation, validation, and revocation capabilities with audience-based scoping
+- **Multi-Client Support**: Configurable OAuth clients for web, mobile, and service applications with resource-based audience assignment
 - **Clean Architecture**: Layered architecture promoting maintainability and testability
 - **PostgreSQL Integration**: Secure user credential storage with BCrypt password hashing
 - **Customizable Login UI**: ASP.NET-based login interface with branding support
