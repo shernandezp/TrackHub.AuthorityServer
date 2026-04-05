@@ -211,6 +211,12 @@ Key Points:
 - The **Authorization Service (OpenIdDict)** handles both user authorization and service authentication flows.
 - **Postgres Database** stores security information for users within the `security` schema and `users` table.
 
+## Docker Deployment
+
+When deployed behind a reverse proxy (e.g., nginx with SSL termination), the Authority Server uses `ForwardedHeaders` middleware to trust `X-Forwarded-Proto` and `X-Forwarded-For` headers. This ensures OpenIddict correctly identifies HTTPS requests even though internal container traffic uses HTTP.
+
+See [TrackHub.Deployment](https://github.com/shernandezp/TrackHub.Deployment) for full deployment instructions.
+
 ## License
 
 This project is licensed under the Apache 2.0 License. See the [LICENSE file](https://www.apache.org/licenses/LICENSE-2.0) for more information.
