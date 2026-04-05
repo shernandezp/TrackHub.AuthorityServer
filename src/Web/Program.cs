@@ -99,10 +99,16 @@ if (!app.Environment.IsDevelopment())
 app.UseRequestLocalization(localizationOptions);
 
 // Trust reverse proxy headers (nginx terminates SSL)
-app.UseForwardedHeaders(new ForwardedHeadersOptions
+var forwardedHeadersOptions = new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-});
+};
+forwardedHeadersOptions.KnownIPNetworks.Clear();
+forwardedHeadersOptions.KnownProxies.Clear();
+app.UseForwardedHeaders(forwardedHeadersOptions);
+
+// Set PathBase for reverse proxy path prefix (/Identity/)
+app.UsePathBase("/Identity");
 
 app.UseHealthChecks("/health");
 app.UseHttpsRedirection();
