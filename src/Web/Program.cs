@@ -107,7 +107,6 @@ forwardedHeadersOptions.KnownIPNetworks.Clear();
 forwardedHeadersOptions.KnownProxies.Clear();
 app.UseForwardedHeaders(forwardedHeadersOptions);
 
-// Set PathBase for reverse proxy path prefix (/Identity/)
 app.UsePathBase("/Identity");
 
 app.UseHealthChecks("/health");
