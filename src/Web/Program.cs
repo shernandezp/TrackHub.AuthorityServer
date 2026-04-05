@@ -17,6 +17,7 @@ using System.Globalization;
 using Ardalis.GuardClauses;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using OpenIddict.Server.AspNetCore;
 using Security.Infrastructure;
@@ -96,6 +97,12 @@ if (!app.Environment.IsDevelopment())
 
 // Add localization middleware
 app.UseRequestLocalization(localizationOptions);
+
+// Trust reverse proxy headers (nginx terminates SSL)
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
 app.UseHealthChecks("/health");
 app.UseHttpsRedirection();
