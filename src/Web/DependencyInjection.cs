@@ -93,7 +93,8 @@ public static class DependencyInjection
                 _.UseAspNetCore()
                     .EnableTokenEndpointPassthrough()
                     .EnableEndSessionEndpointPassthrough()
-                    .EnableAuthorizationEndpointPassthrough();
+                    .EnableAuthorizationEndpointPassthrough()
+                    .DisableTransportSecurityRequirement();
             }
         );
 
