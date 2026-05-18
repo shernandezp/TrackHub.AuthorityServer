@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2026 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -13,12 +13,11 @@
 //  limitations under the License.
 //
 
-using Security.Infrastructure.Entities;
+using Security.Domain.Models;
 
-namespace Security.Infrastructure.Interfaces;
-public interface ISecurityDbContext
+namespace Security.Domain.Interfaces;
+
+public interface IDriverCredentialReader
 {
-    DbSet<User> Users { get; set; }
-    DbSet<Client> Clients { get; set; }
-    DbSet<DriverCredential> DriverCredentials { get; set; }
+    Task<DriverCredentialAuthenticationVm?> GetDriverCredentialByLoginAsync(string normalizedLogin, CancellationToken cancellationToken);
 }

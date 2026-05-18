@@ -105,7 +105,6 @@ internal class Seeder(IServiceProvider serviceProvider)
                         OpenIddictConstants.Permissions.Endpoints.EndSession,
 
                         OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode,
-                        OpenIddictConstants.Permissions.GrantTypes.ClientCredentials,
                         OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
 
                         OpenIddictConstants.Permissions.Prefixes.Scope + scope,

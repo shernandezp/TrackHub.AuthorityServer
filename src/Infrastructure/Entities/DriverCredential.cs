@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2026 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -16,19 +16,18 @@
 using Common.Infrastructure;
 
 namespace Security.Infrastructure.Entities;
-public sealed class User(
-    string username,
-    string password,
-    string emailAddress,
-    Guid accountId) : BaseAuditableEntity
+
+public sealed class DriverCredential : BaseAuditableEntity
 {
-    public Guid UserId { get; private set; } = Guid.NewGuid();
-    public string Username { get; set; } = username;
-    public string Password { get; set; } = password;
-    public string EmailAddress { get; set; } = emailAddress;
-    public DateTime? Verified { get; set; }
+    public Guid DriverCredentialId { get; private set; }
+    public Guid DriverId { get; set; }
+    public Guid AccountId { get; set; }
+    public string NormalizedLogin { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
+    public int FailedAttempts { get; set; }
+    public DateTimeOffset? LockedUntil { get; set; }
+    public DateTimeOffset? VerifiedAt { get; set; }
+    public DateTimeOffset? LastLoginAt { get; set; }
     public bool Active { get; set; }
-    public int LoginAttempts { get; set; }
-    public Guid AccountId { get; set; } = accountId;
-    public Client? Client { get; set; }
+    public bool ResetRequired { get; set; }
 }

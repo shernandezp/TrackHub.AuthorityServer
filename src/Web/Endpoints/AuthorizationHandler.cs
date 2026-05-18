@@ -25,6 +25,8 @@ namespace Web.Endpoints;
 // This class handles the authorization process.
 public sealed class AuthorizationHandler
 {
+    private const string DriverMobileClientId = "driver_mobile_client";
+
     // This method is responsible for authorizing the request.
     public async Task Authorize(HttpContext context)
     {
@@ -38,21 +40,52 @@ public sealed class AuthorizationHandler
         // If the user principal can't be extracted, challenge the authentication scheme.
         if (!result.Succeeded)
         {
-            await context.ChallengeAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new AuthenticationProperties
-                {
-                    RedirectUri = context.Request.PathBase + context.Request.Path + QueryString.Create(
-                    context.Request.HasFormContentType ? [.. context.Request.Form] : context.Request.Query.ToList())
-                });
+            await ChallengeWithCurrentRequestAsync(context);
             return;
         }
 
-        // Create a list of claims for the user.
+        var cookiePrincipal = result.Principal ?? throw new InvalidOperationException("The authentication cookie principal cannot be retrieved.");
+        var principalType = cookiePrincipal.FindFirst("principal_type")?.Value ?? "User";
+
+        if (string.Equals(request.ClientId, DriverMobileClientId, StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(principalType, "Driver", StringComparison.OrdinalIgnoreCase))
+        {
+            await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await ChallengeWithCurrentRequestAsync(context);
+            return;
+        }
+
+        if (string.Equals(principalType, "Driver", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(request.ClientId, DriverMobileClientId, StringComparison.OrdinalIgnoreCase))
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            return;
+        }
+
+        var subject = cookiePrincipal.Claims.Single(x => x.Type == ClaimTypes.Sid).Value;
         var claims = new List<Claim>
+        {
+            AccessTokenClaim(OpenIddictConstants.Claims.Subject, subject),
+            AccessTokenClaim("principal_type", principalType)
+        };
+
+        if (string.Equals(principalType, "Driver", StringComparison.OrdinalIgnoreCase))
+        {
+            AddRequiredClaim(cookiePrincipal, claims, "driver_id");
+            AddRequiredClaim(cookiePrincipal, claims, "account_id");
+            claims.Add(AccessTokenClaim("client_id", DriverMobileClientId));
+        }
+        else
+        {
+            if (!TryAddClaim(cookiePrincipal, claims, "account_id"))
             {
-                new(OpenIddictConstants.Claims.Subject, result.Principal?.Claims.Single(x => x.Type == ClaimTypes.Sid).Value ?? string.Empty)
-            };
+                await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                await ChallengeWithCurrentRequestAsync(context);
+                return;
+            }
+
+            claims.Add(AccessTokenClaim("user_id", subject));
+        }
 
         // Create a claims identity and principal.
         var claimsIdentity = new ClaimsIdentity(claims, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
@@ -71,4 +104,41 @@ public sealed class AuthorizationHandler
             await context.SignInAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme, claimsPrincipal);
         }
     }
+
+    private static void AddRequiredClaim(ClaimsPrincipal principal, List<Claim> claims, string type)
+    {
+        var value = principal.FindFirst(type)?.Value;
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            throw new InvalidOperationException($"The required '{type}' claim is missing.");
+        }
+
+        claims.Add(AccessTokenClaim(type, value));
+    }
+
+    private static bool TryAddClaim(ClaimsPrincipal principal, List<Claim> claims, string type)
+    {
+        var value = principal.FindFirst(type)?.Value;
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return false;
+        }
+
+        claims.Add(AccessTokenClaim(type, value));
+        return true;
+    }
+
+    private static Task ChallengeWithCurrentRequestAsync(HttpContext context)
+    {
+        return context.ChallengeAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            new AuthenticationProperties
+            {
+                RedirectUri = context.Request.PathBase + context.Request.Path + QueryString.Create(
+                    context.Request.HasFormContentType ? [.. context.Request.Form] : context.Request.Query.ToList())
+            });
+    }
+
+    private static Claim AccessTokenClaim(string type, string value)
+        => new Claim(type, value).SetDestinations(OpenIddictConstants.Destinations.AccessToken);
 }

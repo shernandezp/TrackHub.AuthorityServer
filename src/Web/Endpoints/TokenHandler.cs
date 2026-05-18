@@ -77,6 +77,12 @@ public sealed class TokenHandler(IClientReader clientReader)
             identity.AddClaim(new Claim(ClaimTypes.Role, "service")
                 .SetDestinations(OpenIddictConstants.Destinations.AccessToken));
 
+            identity.AddClaim(new Claim("client_id", request.ClientId)
+                .SetDestinations(OpenIddictConstants.Destinations.AccessToken));
+
+            identity.AddClaim(new Claim("principal_type", "ServiceClient")
+                .SetDestinations(OpenIddictConstants.Destinations.AccessToken));
+
             var principal = new ClaimsPrincipal(identity);
 
             // Set the scopes granted to the client application

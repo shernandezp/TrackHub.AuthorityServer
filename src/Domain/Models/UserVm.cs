@@ -21,4 +21,5 @@ public record struct UserVm(
     string EmailAddress,
     DateTime? Verified,
     bool Active,
-    int LoginAttempts);
+    int LoginAttempts,
+    Guid AccountId);

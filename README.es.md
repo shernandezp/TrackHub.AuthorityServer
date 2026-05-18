@@ -1,4 +1,4 @@
-﻿# Servicio de Autorización de TrackHub
+# Servicio de Autorización de TrackHub
 
 ## Características Principales
 
@@ -10,6 +10,15 @@
 - **Arquitectura Limpia**: Arquitectura en capas que promueve la mantenibilidad y la capacidad de prueba
 - **Integración PostgreSQL**: Almacenamiento seguro de credenciales de usuario con hash de contraseñas BCrypt
 - **UI de Login Personalizable**: Interfaz de inicio de sesión basada en ASP.NET con soporte para personalización de marca
+
+---
+
+
+## Mejoras de Plataforma Base
+
+- Emite tokens conscientes de cuenta con claims explicitos `principal_type` y `account_id` para flujos de usuario y conductor.
+- Soporta identidades de usuario, conductor y cliente de servicio, incluyendo `driver_mobile_client` y tokens de servicio con client credentials.
+- Evita que cookies antiguas generen tokens incompletos al requerir reautenticacion cuando faltan claims obligatorios de tenant.
 
 ---
 
@@ -214,3 +223,5 @@ Notas:
 ## Licencia
 
 Este proyecto está bajo la Licencia Apache 2.0. Consulta el archivo [LICENSE](https://www.apache.org/licenses/LICENSE-2.0) para más información.
+
+
