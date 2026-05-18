@@ -13,15 +13,6 @@
 
 ---
 
-
-## Platform Foundation Enhancements
-
-- Issues account-aware tokens with explicit `principal_type` and `account_id` claims for user and driver flows.
-- Supports user, driver, and service-client identities, including `driver_mobile_client` and client-credentials service tokens.
-- Keeps stale cookies from producing incomplete tokens by requiring re-authentication when mandatory tenant claims are missing.
-
----
-
 ## Quick Start
 
 ### Prerequisites
@@ -229,5 +220,6 @@ See [TrackHub.Deployment](https://github.com/shernandezp/TrackHub.Deployment) fo
 ## License
 
 This project is licensed under the Apache 2.0 License. See the [LICENSE file](https://www.apache.org/licenses/LICENSE-2.0) for more information.
+
 
 

@@ -13,15 +13,6 @@
 
 ---
 
-
-## Mejoras de Plataforma Base
-
-- Emite tokens conscientes de cuenta con claims explicitos `principal_type` y `account_id` para flujos de usuario y conductor.
-- Soporta identidades de usuario, conductor y cliente de servicio, incluyendo `driver_mobile_client` y tokens de servicio con client credentials.
-- Evita que cookies antiguas generen tokens incompletos al requerir reautenticacion cuando faltan claims obligatorios de tenant.
-
----
-
 ## Inicio Rápido
 
 ### Requisitos Previos
