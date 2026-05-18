@@ -5,6 +5,10 @@
       "resource": "trackhub_api"
     },
     {
+      "name": "driver_mobile_scope",
+      "resource": "trackhub_api"
+    },
+    {
       "name": "web_scope",
       "resource": "trackhub_api"
     },
@@ -25,6 +29,12 @@
       "uri": "trackhubmobile://callback",
       "postLogoutUri": "trackhubmobile://callback",
       "scope": "mobile_scope"
+    },
+    {
+      "clientId": "driver_mobile_client",
+      "uri": "trackhubmobiledriver://callback",
+      "postLogoutUri": "trackhubmobiledriver://callback",
+      "scope": "driver_mobile_scope"
     },
     {
       "clientId": "web_client",

@@ -37,6 +37,8 @@ public static class DependencyInjection
         services.AddScoped<IClientReader, ClientReader>();
         services.AddScoped<IUserReader, UserReader>();
         services.AddScoped<IUserWriter, UserWriter>();
+        services.AddScoped<IDriverCredentialReader, DriverCredentialReader>();
+        services.AddScoped<IDriverCredentialWriter, DriverCredentialWriter>();
 
         return services;
     }

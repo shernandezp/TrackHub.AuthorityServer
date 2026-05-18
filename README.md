@@ -1,4 +1,4 @@
-﻿# Authorization Service - TrackHub
+# Authorization Service - TrackHub
 
 [English](README.en.md) | [Español](README.es.md)
 
@@ -9,6 +9,8 @@ Currently in development, our project aims to foster collaboration among diverse
 We believe in the strength of community collaboration to create effective and accessible tools for everyone. Contribute to TrackHub to help shape the future of monitoring solutions!
 
 ![Image](https://github.com/shernandezp/TrackHub.AuthorityServer/blob/master/src/Web/wwwroot/images/logo.png)
+
+---
 
 ## Project Repositories
 
@@ -22,3 +24,6 @@ We believe in the strength of community collaboration to create effective and ac
 | **Geofencing API**          | [https://github.com/shernandezp/TrackHub.Geofencing](https://github.com/shernandezp/TrackHub.Geofencing)    |
 | **Reporting API**           | [https://github.com/shernandezp/TrackHub.Reporting](https://github.com/shernandezp/TrackHub.Reporting)    |
 | **TrackHub Web**            | [https://github.com/shernandezp/TrackHub](https://github.com/shernandezp/TrackHub)          |
+
+
+

@@ -22,12 +22,15 @@ using Security.Application.Users.Queries.GetUsers;
 using System.Security.Authentication;
 using Microsoft.Extensions.Localization;
 using Common.Application.Exceptions;
+using Security.Application.Drivers.Queries.AuthenticateDriver;
 using Web.Models;
 
 namespace Web.Controllers;
 
 public class LoginController(ISender sender, IStringLocalizer<LoginController> localizer, ILogger<LoginController> logger) : Controller
 {
+    private const string DriverMobileClientId = "driver_mobile_client";
+
     // GET: /Login
     // Returns the login view.
     [HttpGet]
@@ -56,11 +59,32 @@ public class LoginController(ISender sender, IStringLocalizer<LoginController> l
 
         try
         {
-            // Send a query to retrieve the user based on the provided email and password.
+            if (IsDriverMobileLogin(model.ReturnUrl))
+            {
+                var driver = await sender.Send(new AuthenticateDriverQuery(model.Email, model.Password));
+                var driverClaims = new List<Claim>
+                {
+                    new(ClaimTypes.Sid, driver.DriverId.ToString()),
+                    new("principal_type", "Driver"),
+                    new("driver_id", driver.DriverId.ToString()),
+                    new("account_id", driver.AccountId.ToString()),
+                    new("client_id", DriverMobileClientId)
+                };
+
+                await HttpContext.SignInAsync(new ClaimsPrincipal(new ClaimsIdentity(driverClaims, CookieAuthenticationDefaults.AuthenticationScheme)));
+                return Redirect(model.ReturnUrl);
+            }
+
             var user = await sender.Send(new GetUsersQuery(model.Email, model.Password));
 
             // Create claims for the authenticated user.
-            var claims = new List<Claim> { new(ClaimTypes.Sid, $"{user.UserId}") };
+            var claims = new List<Claim>
+            {
+                new(ClaimTypes.Sid, $"{user.UserId}"),
+                new("principal_type", "User"),
+                new("user_id", $"{user.UserId}"),
+                new("account_id", $"{user.AccountId}")
+            };
 
             // Create a claims identity using the claims and the default authentication scheme.
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -90,4 +114,7 @@ public class LoginController(ISender sender, IStringLocalizer<LoginController> l
         return View(model);
     }
 
+    private static bool IsDriverMobileLogin(string? returnUrl)
+        => !string.IsNullOrWhiteSpace(returnUrl)
+        && Uri.UnescapeDataString(returnUrl).Contains($"client_id={DriverMobileClientId}", StringComparison.OrdinalIgnoreCase);
 }

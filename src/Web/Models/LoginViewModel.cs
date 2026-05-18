@@ -21,7 +21,6 @@ namespace Web.Models;
 public sealed class LoginViewModel
 {
     [Required(ErrorMessageResourceName = "EmailRequired", ErrorMessageResourceType = typeof(ValidationMessages))]
-    [EmailAddress(ErrorMessageResourceName = "InvalidEmailAddress", ErrorMessageResourceType = typeof(ValidationMessages))]
     public string Email { get; set; } = string.Empty;
     [Required(ErrorMessageResourceName = "PasswordRequired", ErrorMessageResourceType = typeof(ValidationMessages))]
     [StringLength(100, ErrorMessageResourceName = "PasswordLength", ErrorMessageResourceType = typeof(ValidationMessages), MinimumLength = 8)]

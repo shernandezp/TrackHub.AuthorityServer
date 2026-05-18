@@ -40,6 +40,9 @@ public class GetUsersQueryHandler(IUserReader reader, IPublisher publisher) : IR
         if (!user.Active)
             throw new AuthenticationException("User account is inactive");
 
+        if (user.AccountId == Guid.Empty)
+            throw new AuthenticationException("User account is missing tenant assignment");
+
         if (user.LoginAttempts > 3)
             throw new AuthenticationException("Too many failed login attempts");
 
