@@ -48,6 +48,11 @@
       "clientId": "syncworker_client",
       "clientSecret": "470339fa-040e-4a43-b410-e3e4bc55c858",
       "scope": "service_scope"
+    },
+    {
+      "clientId": "router_client",
+      "clientSecret": "0e22a8ea-0533-4b21-972f-6c7406842d98",
+      "scope": "service_scope"
     }
   ]
 }
