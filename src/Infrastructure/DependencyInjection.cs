@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -14,11 +14,11 @@
 //
 
 using Microsoft.Extensions.Configuration;
-using Security.Domain.Interfaces;
-using Security.Infrastructure;
-using Security.Infrastructure.Interfaces;
-using Security.Infrastructure.Readers;
-using Security.Infrastructure.Writers;
+using TrackHub.AuthorityServer.Domain.Interfaces;
+using TrackHub.AuthorityServer.Infrastructure;
+using TrackHub.AuthorityServer.Infrastructure.Interfaces;
+using TrackHub.AuthorityServer.Infrastructure.Readers;
+using TrackHub.AuthorityServer.Infrastructure.Writers;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

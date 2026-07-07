@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Security.Infrastructure.Migrations
+namespace TrackHub.AuthorityServer.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class InitialMigration : Migration

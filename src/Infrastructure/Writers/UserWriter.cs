@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -13,10 +13,10 @@
 //  limitations under the License.
 //
 
-using Security.Domain.Interfaces;
-using Security.Infrastructure.Entities;
+using TrackHub.AuthorityServer.Domain.Interfaces;
+using TrackHub.AuthorityServer.Infrastructure.Entities;
 
-namespace Security.Infrastructure.Writers;
+namespace TrackHub.AuthorityServer.Infrastructure.Writers;
 
 public sealed class UserWriter(SecurityDbContext context) : IUserWriter
 {

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -13,11 +13,11 @@
 //  limitations under the License.
 //
 
-using Security.Domain.Interfaces;
-using Security.Domain.Models;
-using Security.Domain.Records;
+using TrackHub.AuthorityServer.Domain.Interfaces;
+using TrackHub.AuthorityServer.Domain.Models;
+using TrackHub.AuthorityServer.Domain.Records;
 
-namespace Security.Infrastructure.Readers;
+namespace TrackHub.AuthorityServer.Infrastructure.Readers;
 public sealed class UserReader(SecurityDbContext context) : IUserReader
 {
     public async Task<UserVm> GetUserAsync(UserLoginDto userLogin, CancellationToken cancellationToken)

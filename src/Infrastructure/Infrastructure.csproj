@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Security.Infrastructure</RootNamespace>
-    <AssemblyName>Security.Infrastructure</AssemblyName>
+    <RootNamespace>TrackHub.AuthorityServer.Infrastructure</RootNamespace>
+    <AssemblyName>TrackHub.AuthorityServer.Infrastructure</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />

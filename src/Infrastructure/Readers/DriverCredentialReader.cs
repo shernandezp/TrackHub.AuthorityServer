@@ -13,10 +13,10 @@
 //  limitations under the License.
 //
 
-using Security.Domain.Interfaces;
-using Security.Domain.Models;
+using TrackHub.AuthorityServer.Domain.Interfaces;
+using TrackHub.AuthorityServer.Domain.Models;
 
-namespace Security.Infrastructure.Readers;
+namespace TrackHub.AuthorityServer.Infrastructure.Readers;
 
 public sealed class DriverCredentialReader(SecurityDbContext context) : IDriverCredentialReader
 {

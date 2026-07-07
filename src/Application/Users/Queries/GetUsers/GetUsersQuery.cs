@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
 //
 
 using System.Security.Authentication;
-using Security.Domain.Interfaces;
-using Security.Domain.Models;
+using TrackHub.AuthorityServer.Domain.Interfaces;
+using TrackHub.AuthorityServer.Domain.Models;
 using Common.Domain.Extensions;
-using Security.Application.Users.Events;
+using TrackHub.AuthorityServer.Application.Users.Events;
 
-namespace Security.Application.Users.Queries.GetUsers;
+namespace TrackHub.AuthorityServer.Application.Users.Queries.GetUsers;
 
 public readonly record struct GetUsersQuery(string EmailAddress, string Password) : IRequest<UserVm>;
 

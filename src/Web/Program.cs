@@ -20,9 +20,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using OpenIddict.Server.AspNetCore;
-using Security.Infrastructure;
-using Security.Web;
-using Web.Endpoints;
+using TrackHub.AuthorityServer.Infrastructure;
+using TrackHub.AuthorityServer.Web;
+using TrackHub.AuthorityServer.Web.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 

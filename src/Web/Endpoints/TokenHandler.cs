@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ using OpenIddict.Server.AspNetCore;
 using OpenIddict.Abstractions;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
-using Security.Domain.Interfaces;
+using TrackHub.AuthorityServer.Domain.Interfaces;
 
-namespace Web.Endpoints;
+namespace TrackHub.AuthorityServer.Web.Endpoints;
 
 // Responsible for handling token exchange requests.
 public sealed class TokenHandler(IClientReader clientReader)

@@ -13,7 +13,7 @@
 //  limitations under the License.
 //
 
-namespace Security.Domain.Interfaces;
+namespace TrackHub.AuthorityServer.Domain.Interfaces;
 
 public interface IDriverCredentialWriter
 {

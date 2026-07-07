@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Security.Infrastructure.Migrations.SecurityDb
+namespace TrackHub.AuthorityServer.Infrastructure.Migrations.SecurityDb
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

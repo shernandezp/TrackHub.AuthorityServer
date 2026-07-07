@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
 //
 
 using System.ComponentModel.DataAnnotations;
-using Security.Web.Helpers;
+using TrackHub.AuthorityServer.Web.Helpers;
 
-namespace Web.Models;
+namespace TrackHub.AuthorityServer.Web.Models;
 
 public sealed class LoginViewModel
 {

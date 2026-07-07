@@ -13,9 +13,9 @@
 //  limitations under the License.
 //
 
-using Security.Domain.Models;
+using TrackHub.AuthorityServer.Domain.Models;
 
-namespace Security.Domain.Interfaces;
+namespace TrackHub.AuthorityServer.Domain.Interfaces;
 
 public interface IDriverCredentialReader
 {

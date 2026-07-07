@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 using System.Security.Cryptography.X509Certificates;
 using Ardalis.GuardClauses;
 using Quartz;
-using Security.Infrastructure;
+using TrackHub.AuthorityServer.Infrastructure;
 
-namespace Security.Web;
+namespace TrackHub.AuthorityServer.Web;
 
 public static class DependencyInjection
 {

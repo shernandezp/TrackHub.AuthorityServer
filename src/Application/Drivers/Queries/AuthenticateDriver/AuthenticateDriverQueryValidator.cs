@@ -15,7 +15,7 @@
 
 using Common.Domain.Constants;
 
-namespace Security.Application.Drivers.Queries.AuthenticateDriver;
+namespace TrackHub.AuthorityServer.Application.Drivers.Queries.AuthenticateDriver;
 
 public sealed class AuthenticateDriverQueryValidator : AbstractValidator<AuthenticateDriverQuery>
 {

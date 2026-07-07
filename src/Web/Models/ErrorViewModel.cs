@@ -13,7 +13,7 @@
 //  limitations under the License.
 //
 
-namespace Web.Models;
+namespace TrackHub.AuthorityServer.Web.Models;
 
 public class ErrorViewModel
 {
