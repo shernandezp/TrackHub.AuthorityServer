@@ -35,4 +35,10 @@ public sealed class DriverCredentialReader(SecurityDbContext context) : IDriverC
                 x.Active,
                 x.ResetRequired))
             .SingleOrDefaultAsync(cancellationToken);
+
+    // Used for refresh-token subject re-validation: the driver must still hold an active credential.
+    public async Task<bool> HasActiveCredentialAsync(Guid driverId, CancellationToken cancellationToken)
+        => await context.DriverCredentials
+            .AsNoTracking()
+            .AnyAsync(x => x.DriverId == driverId && x.Active, cancellationToken);
 }

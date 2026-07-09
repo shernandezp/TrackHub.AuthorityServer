@@ -53,6 +53,11 @@
       "clientId": "router_client",
       "clientSecret": "0e22a8ea-0533-4b21-972f-6c7406842d98",
       "scope": "service_scope"
+    },
+    {
+      "clientId": "security_client",
+      "clientSecret": "6f3d1c4a-9b27-4e58-8a11-2c7f5d90ab34",
+      "scope": "service_scope"
     }
   ]
 }

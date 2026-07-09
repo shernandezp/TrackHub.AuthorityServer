@@ -23,7 +23,10 @@ using TrackHub.AuthorityServer.Domain.Interfaces;
 namespace TrackHub.AuthorityServer.Web.Endpoints;
 
 // Responsible for handling token exchange requests.
-public sealed class TokenHandler(IClientReader clientReader)
+public sealed class TokenHandler(
+    IClientReader clientReader,
+    IUserReader userReader,
+    IDriverCredentialReader driverCredentialReader)
 {
     /// <summary>
     /// Handles the token exchange request.
@@ -42,12 +45,26 @@ public sealed class TokenHandler(IClientReader clientReader)
         if (request.IsAuthorizationCodeGrantType() || request.IsRefreshTokenGrantType())
         {
             // Retrieve the claims principal stored in the authorization code
-            var claimsPrincipal = (await context.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)).Principal;
+            var claimsPrincipal = (await context.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)).Principal
+                ?? throw new NotImplementedException("The specified grant type is not implemented.");
+
+            // On refresh, re-validate the subject so that a deactivated/locked user or a driver whose
+            // credential was revoked cannot keep exchanging refresh tokens for the token's full lifetime.
+            if (request.IsRefreshTokenGrantType()
+                && !await IsSubjectStillValidAsync(claimsPrincipal, context.RequestAborted))
+            {
+                return Results.Forbid(
+                    authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme],
+                    properties: new AuthenticationProperties(new Dictionary<string, string?>
+                    {
+                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = OpenIddictConstants.Errors.InvalidGrant,
+                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
+                            "The subject associated with the refresh token is no longer valid."
+                    }));
+            }
 
             // Return the result based on the claims principal
-            return claimsPrincipal != null
-                ? Results.SignIn(claimsPrincipal, properties: null, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)
-                : throw new NotImplementedException("The specified grant type is not implemented.");
+            return Results.SignIn(claimsPrincipal, properties: null, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
         else if (request.IsClientCredentialsGrantType())
         {
@@ -95,9 +112,40 @@ public sealed class TokenHandler(IClientReader clientReader)
             // Return the result based on the claims principal
             return Results.SignIn(principal, properties: null, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
-        else 
+        else
         {
             throw new InvalidOperationException("The specified grant type is not supported.");
         }
+    }
+
+    // Re-validates the principal behind a refresh token against the current security state.
+    private async Task<bool> IsSubjectStillValidAsync(ClaimsPrincipal principal, CancellationToken cancellationToken)
+    {
+        var principalType = principal.FindFirst("principal_type")?.Value ?? "User";
+
+        if (string.Equals(principalType, "Driver", StringComparison.OrdinalIgnoreCase))
+        {
+            return Guid.TryParse(principal.FindFirst("driver_id")?.Value, out var driverId)
+                && await driverCredentialReader.HasActiveCredentialAsync(driverId, cancellationToken);
+        }
+
+        // Client-credentials tokens carry no refresh token, so nothing to re-validate for them.
+        if (string.Equals(principalType, "ServiceClient", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        var subject = principal.FindFirst("user_id")?.Value
+            ?? principal.FindFirst(OpenIddictConstants.Claims.Subject)?.Value;
+
+        if (!Guid.TryParse(subject, out var userId))
+        {
+            return false;
+        }
+
+        var user = await userReader.GetUserAsync(userId, cancellationToken);
+        return user != default
+            && user.Active
+            && (user.LockedUntil is null || user.LockedUntil <= DateTimeOffset.UtcNow);
     }
 }

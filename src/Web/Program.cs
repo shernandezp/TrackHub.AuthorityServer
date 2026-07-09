@@ -80,6 +80,7 @@ builder.Services.AddHealthChecks()
 //Register Handlers
 builder.Services.AddScoped<AuthorizationHandler>();
 builder.Services.AddScoped<TokenHandler>();
+builder.Services.AddScoped<LogoffHandler>();
 
 // Configure HSTS
 builder.Services.AddHsts(options =>

@@ -29,6 +29,7 @@ public sealed class User(
     public DateTime? Verified { get; set; }
     public bool Active { get; set; }
     public int LoginAttempts { get; set; }
+    public DateTimeOffset? LockedUntil { get; set; }
     public Guid AccountId { get; set; } = accountId;
     public Client? Client { get; set; }
 }

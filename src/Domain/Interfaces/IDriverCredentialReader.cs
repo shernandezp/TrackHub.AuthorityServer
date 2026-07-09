@@ -20,4 +20,6 @@ namespace TrackHub.AuthorityServer.Domain.Interfaces;
 public interface IDriverCredentialReader
 {
     Task<DriverCredentialAuthenticationVm?> GetDriverCredentialByLoginAsync(string normalizedLogin, CancellationToken cancellationToken);
+
+    Task<bool> HasActiveCredentialAsync(Guid driverId, CancellationToken cancellationToken);
 }

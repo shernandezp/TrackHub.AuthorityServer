@@ -21,13 +21,26 @@ namespace TrackHub.AuthorityServer.Infrastructure.Writers;
 public sealed class UserWriter(SecurityDbContext context) : IUserWriter
 {
 
-    // Increases the login attempts of a user asynchronously.
-    public async Task IncreaseLoginAttemptAsync(Guid userId, CancellationToken cancellationToken)
+    // Records a failed login: sets the rolling attempt counter and an optional timed lock.
+    public async Task RecordLoginFailureAsync(Guid userId, int loginAttempts, DateTimeOffset? lockedUntil, CancellationToken cancellationToken)
     {
         var user = await context.Users.FindAsync([userId], cancellationToken)
             ?? throw new NotFoundException(nameof(User), $"{userId}");
 
-        user.LoginAttempts++;
+        user.LoginAttempts = loginAttempts;
+        user.LockedUntil = lockedUntil;
+
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    // Records a successful login: resets the rolling attempt counter and clears any lock.
+    public async Task RecordLoginSuccessAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await context.Users.FindAsync([userId], cancellationToken)
+            ?? throw new NotFoundException(nameof(User), $"{userId}");
+
+        user.LoginAttempts = 0;
+        user.LockedUntil = null;
 
         await context.SaveChangesAsync(cancellationToken);
     }

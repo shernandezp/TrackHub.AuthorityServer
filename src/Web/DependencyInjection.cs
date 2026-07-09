@@ -55,6 +55,10 @@ public static class DependencyInjection
                 _.SetEndSessionEndpointUris("logout");
                 _.RegisterScopes(scopes.Split(','));
 
+                // Make token lifetimes explicit (OpenIddict defaults, pinned as configuration intent).
+                _.SetAccessTokenLifetime(TimeSpan.FromHours(1));
+                _.SetRefreshTokenLifetime(TimeSpan.FromDays(14));
+
 #if DEBUG
                     _.AddDevelopmentEncryptionCertificate()
                         .AddDevelopmentSigningCertificate();

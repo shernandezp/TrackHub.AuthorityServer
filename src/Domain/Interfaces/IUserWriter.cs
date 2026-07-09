@@ -17,5 +17,7 @@ namespace TrackHub.AuthorityServer.Domain.Interfaces;
 
 public interface IUserWriter
 {
-    Task IncreaseLoginAttemptAsync(Guid userId, CancellationToken cancellationToken);
+    Task RecordLoginFailureAsync(Guid userId, int loginAttempts, DateTimeOffset? lockedUntil, CancellationToken cancellationToken);
+
+    Task RecordLoginSuccessAsync(Guid userId, CancellationToken cancellationToken);
 }

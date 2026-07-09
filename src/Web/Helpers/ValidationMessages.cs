@@ -20,7 +20,7 @@ namespace TrackHub.AuthorityServer.Web.Helpers;
 
 public static class ValidationMessages
 {
-    private static readonly ResourceManager ResourceManager = new("Web.Resources.ValidationMessages", typeof(ValidationMessages).Assembly);
+    private static readonly ResourceManager ResourceManager = new("TrackHub.AuthorityServer.Web.Resources.ValidationMessages", typeof(ValidationMessages).Assembly);
 
     public static string EmailRequired => ResourceManager.GetString("EmailRequired", CultureInfo.CurrentCulture)!;
     public static string InvalidEmailAddress => ResourceManager.GetString("InvalidEmail", CultureInfo.CurrentCulture)!;

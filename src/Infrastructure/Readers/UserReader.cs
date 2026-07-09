@@ -33,6 +33,26 @@ public sealed class UserReader(SecurityDbContext context) : IUserReader
                 u.Verified,
                 u.Active,
                 u.LoginAttempts,
+                u.LockedUntil,
+                u.AccountId))
+            .SingleOrDefaultAsync(cancellationToken);
+    }
+
+    // Loads a user by id for refresh-token subject re-validation (active/locked state).
+    public async Task<UserVm> GetUserAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        return await context.Users
+            .AsNoTracking()
+            .Where(u => u.UserId == userId)
+            .Select(u => new UserVm(
+                u.UserId,
+                u.Username,
+                u.Password,
+                u.EmailAddress,
+                u.Verified,
+                u.Active,
+                u.LoginAttempts,
+                u.LockedUntil,
                 u.AccountId))
             .SingleOrDefaultAsync(cancellationToken);
     }

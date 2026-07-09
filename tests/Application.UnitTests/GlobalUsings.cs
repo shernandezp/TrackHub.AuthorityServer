@@ -1,4 +1,4 @@
-// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2026 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -13,14 +13,4 @@
 //  limitations under the License.
 //
 
-namespace TrackHub.AuthorityServer.Domain.Models;
-public record struct UserVm(
-    Guid UserId,
-    string Username,
-    string Password,
-    string EmailAddress,
-    DateTime? Verified,
-    bool Active,
-    int LoginAttempts,
-    DateTimeOffset? LockedUntil,
-    Guid AccountId);
+global using Moq;

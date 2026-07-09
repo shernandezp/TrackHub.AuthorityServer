@@ -21,4 +21,6 @@ namespace TrackHub.AuthorityServer.Domain.Interfaces;
 public interface IUserReader
 {
     Task<UserVm> GetUserAsync(UserLoginDto user, CancellationToken cancellationToken);
+
+    Task<UserVm> GetUserAsync(Guid userId, CancellationToken cancellationToken);
 }
