@@ -100,7 +100,6 @@ internal class Seeder(IServiceProvider serviceProvider)
                     {
                         OpenIddictConstants.Permissions.Endpoints.Authorization,
                         OpenIddictConstants.Permissions.Endpoints.Token,
-                        OpenIddictConstants.Permissions.Endpoints.Introspection,
                         OpenIddictConstants.Permissions.Endpoints.Revocation,
                         OpenIddictConstants.Permissions.Endpoints.EndSession,
 
@@ -141,6 +140,8 @@ internal class Seeder(IServiceProvider serviceProvider)
             Permissions =
                     {
                         OpenIddictConstants.Permissions.Endpoints.Token,
+                        // Services may revoke their own tokens (RFC 7009), same as the PKCE clients.
+                        OpenIddictConstants.Permissions.Endpoints.Revocation,
                         OpenIddictConstants.Permissions.GrantTypes.ClientCredentials
                     }
         };
