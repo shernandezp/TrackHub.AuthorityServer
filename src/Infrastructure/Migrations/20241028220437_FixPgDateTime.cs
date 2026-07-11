@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Security.Infrastructure.Migrations
+namespace TrackHub.AuthorityServer.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class FixPgDateTime : Migration

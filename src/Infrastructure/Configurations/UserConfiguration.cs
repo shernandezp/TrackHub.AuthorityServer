@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
 
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Common.Domain.Constants;
-using Security.Infrastructure.Entities;
+using TrackHub.AuthorityServer.Infrastructure.Entities;
 
-namespace Security.Infrastructure.Configurations;
+namespace TrackHub.AuthorityServer.Infrastructure.Configurations;
 
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {
@@ -34,6 +34,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Verified).HasColumnName("verified");
         builder.Property(x => x.Active).HasColumnName("active");
         builder.Property(x => x.LoginAttempts).HasColumnName("loginattempts");
+        builder.Property(x => x.LockedUntil).HasColumnName("lockeduntil");
         builder.Property(x => x.AccountId).HasColumnName("accountid");
 
         builder.Property(t => t.Username)

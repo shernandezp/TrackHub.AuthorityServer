@@ -15,9 +15,9 @@
 
 using Common.Domain.Constants;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Security.Infrastructure.Entities;
+using TrackHub.AuthorityServer.Infrastructure.Entities;
 
-namespace Security.Infrastructure.Configurations;
+namespace TrackHub.AuthorityServer.Infrastructure.Configurations;
 
 public sealed class DriverCredentialConfiguration : IEntityTypeConfiguration<DriverCredential>
 {

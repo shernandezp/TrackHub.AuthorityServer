@@ -15,7 +15,7 @@
 
 using Common.Infrastructure;
 
-namespace Security.Infrastructure.Entities;
+namespace TrackHub.AuthorityServer.Infrastructure.Entities;
 
 public sealed class DriverCredential : BaseAuditableEntity
 {

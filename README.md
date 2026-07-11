@@ -23,7 +23,12 @@ We believe in the strength of community collaboration to create effective and ac
 | **Router API**              | [https://github.com/shernandezp/TrackHubRouter](https://github.com/shernandezp/TrackHubRouter)    |
 | **Geofencing API**          | [https://github.com/shernandezp/TrackHub.Geofencing](https://github.com/shernandezp/TrackHub.Geofencing)    |
 | **Reporting API**           | [https://github.com/shernandezp/TrackHub.Reporting](https://github.com/shernandezp/TrackHub.Reporting)    |
+| **Telemetry API**           | [https://github.com/shernandezp/TrackHub.Telemetry](https://github.com/shernandezp/TrackHub.Telemetry)    |
 | **TrackHub Web**            | [https://github.com/shernandezp/TrackHub](https://github.com/shernandezp/TrackHub)          |
 
 
 
+
+## Overview
+
+The Authorization Service is the OpenIddict-based identity and OAuth2/OpenID Connect token server. It authenticates users and service clients and issues the access tokens (audience `trackhub_api`) that every other TrackHub service validates.

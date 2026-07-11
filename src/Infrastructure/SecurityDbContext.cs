@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -13,11 +13,12 @@
 //  limitations under the License.
 //
 
-using Security.Infrastructure.Configurations;
-using Security.Infrastructure.Entities;
-using Security.Infrastructure.Interfaces;
+using Common.Infrastructure;
+using TrackHub.AuthorityServer.Infrastructure.Configurations;
+using TrackHub.AuthorityServer.Infrastructure.Entities;
+using TrackHub.AuthorityServer.Infrastructure.Interfaces;
 
-namespace Security.Infrastructure;
+namespace TrackHub.AuthorityServer.Infrastructure;
 
 public class SecurityDbContext(DbContextOptions<SecurityDbContext> options) : DbContext(options), ISecurityDbContext
 {
@@ -31,5 +32,11 @@ public class SecurityDbContext(DbContextOptions<SecurityDbContext> options) : Db
         builder.ApplyConfiguration(new UserConfiguration());
         builder.ApplyConfiguration(new ClientConfiguration());
         builder.ApplyConfiguration(new DriverCredentialConfiguration());
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        base.ConfigureConventions(configurationBuilder);
+        configurationBuilder.UseUtcTimestamps();
     }
 }

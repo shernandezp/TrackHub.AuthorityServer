@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -14,18 +14,22 @@
 //
 
 using System.Security.Authentication;
-using Security.Domain.Interfaces;
-using Security.Domain.Models;
+using TrackHub.AuthorityServer.Domain.Interfaces;
+using TrackHub.AuthorityServer.Domain.Models;
 using Common.Domain.Extensions;
-using Security.Application.Users.Events;
 
-namespace Security.Application.Users.Queries.GetUsers;
+namespace TrackHub.AuthorityServer.Application.Users.Queries.GetUsers;
 
 public readonly record struct GetUsersQuery(string EmailAddress, string Password) : IRequest<UserVm>;
 
-// Handles the GetUsersQuery and returns a UserVm
-public class GetUsersQueryHandler(IUserReader reader, IPublisher publisher) : IRequestHandler<GetUsersQuery, UserVm>
+// Handles the GetUsersQuery and returns a UserVm.
+// Login lockout mirrors the driver credential model (see AuthenticateDriverQuery): a rolling
+// failed-attempt counter that trips a timed lock and resets on a successful login.
+public class GetUsersQueryHandler(IUserReader reader, IUserWriter writer) : IRequestHandler<GetUsersQuery, UserVm>
 {
+    private const int MaximumFailedAttempts = 5;
+    private static readonly TimeSpan LockoutDuration = TimeSpan.FromMinutes(15);
+
     // Handles the GetUsersQuery and returns a UserVm
     public async Task<UserVm> Handle(GetUsersQuery request, CancellationToken cancellationToken)
     {
@@ -43,20 +47,22 @@ public class GetUsersQueryHandler(IUserReader reader, IPublisher publisher) : IR
         if (user.AccountId == Guid.Empty)
             throw new AuthenticationException("User account is missing tenant assignment");
 
-        if (user.LoginAttempts > 3)
-            throw new AuthenticationException("Too many failed login attempts");
+        // Deny while the account is locked, without revealing whether the password was correct.
+        if (user.LockedUntil.HasValue && user.LockedUntil.Value > DateTimeOffset.UtcNow)
+            throw new AuthenticationException("User account is temporarily locked. Please try again later.");
 
         if (user.Password.VerifyHashedPassword(request.Password))
         {
+            await writer.RecordLoginSuccessAsync(user.UserId, cancellationToken);
             user.Password = string.Empty;
             return user;
         }
-        else 
-        {
-            await publisher.Publish(new LoginAttempt.Notification(user.UserId), cancellationToken);
-            throw new AuthenticationException("Password is incorrect");
-        }
 
-        throw new AuthenticationException("Email or password is incorrect");
+        var loginAttempts = user.LoginAttempts + 1;
+        DateTimeOffset? lockedUntil = loginAttempts >= MaximumFailedAttempts
+            ? DateTimeOffset.UtcNow.Add(LockoutDuration)
+            : null;
+        await writer.RecordLoginFailureAsync(user.UserId, loginAttempts, lockedUntil, cancellationToken);
+        throw new AuthenticationException("Password is incorrect");
     }
 }

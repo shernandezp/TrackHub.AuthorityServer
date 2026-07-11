@@ -20,9 +20,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using OpenIddict.Server.AspNetCore;
-using Security.Infrastructure;
-using Security.Web;
-using Web.Endpoints;
+using TrackHub.AuthorityServer.Infrastructure;
+using TrackHub.AuthorityServer.Web;
+using TrackHub.AuthorityServer.Web.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -150,12 +150,9 @@ app.MapGet("~/logout", async (HttpContext context) =>
     return Results.Redirect(postLogoutRedirectUri);
 });
 
-app.MapPost("~/revoke", async (HttpContext context) =>
-{
-    var logoffHandler = context.RequestServices.GetRequiredService<LogoffHandler>();
-    await logoffHandler.RevokeTokensAsync(context);
-    return Results.Ok();
-});
+// POST /revoke is handled by OpenIddict's revocation endpoint (SetRevocationEndpointUris):
+// it validates the body token + client_id per RFC 7009 and revokes it. The former custom
+// handler shadowed that endpoint and never worked (it read a claim no anonymous call carries).
 
 app.MapControllerRoute(
     name: "default",

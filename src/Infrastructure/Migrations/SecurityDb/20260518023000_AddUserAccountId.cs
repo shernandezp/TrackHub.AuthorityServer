@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 #nullable disable
 
-namespace Security.Infrastructure.Migrations.SecurityDb
+namespace TrackHub.AuthorityServer.Infrastructure.Migrations.SecurityDb
 {
     /// <inheritdoc />
     [DbContext(typeof(SecurityDbContext))]

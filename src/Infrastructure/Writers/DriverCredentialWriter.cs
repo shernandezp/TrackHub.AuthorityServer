@@ -13,9 +13,9 @@
 //  limitations under the License.
 //
 
-using Security.Domain.Interfaces;
+using TrackHub.AuthorityServer.Domain.Interfaces;
 
-namespace Security.Infrastructure.Writers;
+namespace TrackHub.AuthorityServer.Infrastructure.Writers;
 
 public sealed class DriverCredentialWriter(SecurityDbContext context) : IDriverCredentialWriter
 {

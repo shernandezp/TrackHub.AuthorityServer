@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -13,12 +13,14 @@
 //  limitations under the License.
 //
 
-using Security.Domain.Models;
-using Security.Domain.Records;
+using TrackHub.AuthorityServer.Domain.Models;
+using TrackHub.AuthorityServer.Domain.Records;
 
-namespace Security.Domain.Interfaces;
+namespace TrackHub.AuthorityServer.Domain.Interfaces;
 
 public interface IUserReader
 {
     Task<UserVm> GetUserAsync(UserLoginDto user, CancellationToken cancellationToken);
+
+    Task<UserVm> GetUserAsync(Guid userId, CancellationToken cancellationToken);
 }

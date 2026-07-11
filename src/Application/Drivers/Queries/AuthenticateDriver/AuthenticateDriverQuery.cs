@@ -15,9 +15,9 @@
 
 using System.Security.Authentication;
 using Common.Domain.Extensions;
-using Security.Domain.Interfaces;
+using TrackHub.AuthorityServer.Domain.Interfaces;
 
-namespace Security.Application.Drivers.Queries.AuthenticateDriver;
+namespace TrackHub.AuthorityServer.Application.Drivers.Queries.AuthenticateDriver;
 
 public readonly record struct AuthenticateDriverQuery(string Login, string Password) : IRequest<AuthenticatedDriverVm>;
 

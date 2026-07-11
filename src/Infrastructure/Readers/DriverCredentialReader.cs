@@ -13,10 +13,10 @@
 //  limitations under the License.
 //
 
-using Security.Domain.Interfaces;
-using Security.Domain.Models;
+using TrackHub.AuthorityServer.Domain.Interfaces;
+using TrackHub.AuthorityServer.Domain.Models;
 
-namespace Security.Infrastructure.Readers;
+namespace TrackHub.AuthorityServer.Infrastructure.Readers;
 
 public sealed class DriverCredentialReader(SecurityDbContext context) : IDriverCredentialReader
 {
@@ -35,4 +35,10 @@ public sealed class DriverCredentialReader(SecurityDbContext context) : IDriverC
                 x.Active,
                 x.ResetRequired))
             .SingleOrDefaultAsync(cancellationToken);
+
+    // Used for refresh-token subject re-validation: the driver must still hold an active credential.
+    public async Task<bool> HasActiveCredentialAsync(Guid driverId, CancellationToken cancellationToken)
+        => await context.DriverCredentials
+            .AsNoTracking()
+            .AnyAsync(x => x.DriverId == driverId && x.Active, cancellationToken);
 }

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -13,11 +13,11 @@
 //  limitations under the License.
 //
 
-using Security.Domain.Interfaces;
-using Security.Domain.Models;
-using Security.Domain.Records;
+using TrackHub.AuthorityServer.Domain.Interfaces;
+using TrackHub.AuthorityServer.Domain.Models;
+using TrackHub.AuthorityServer.Domain.Records;
 
-namespace Security.Infrastructure.Readers;
+namespace TrackHub.AuthorityServer.Infrastructure.Readers;
 public sealed class UserReader(SecurityDbContext context) : IUserReader
 {
     public async Task<UserVm> GetUserAsync(UserLoginDto userLogin, CancellationToken cancellationToken)
@@ -33,6 +33,26 @@ public sealed class UserReader(SecurityDbContext context) : IUserReader
                 u.Verified,
                 u.Active,
                 u.LoginAttempts,
+                u.LockedUntil,
+                u.AccountId))
+            .SingleOrDefaultAsync(cancellationToken);
+    }
+
+    // Loads a user by id for refresh-token subject re-validation (active/locked state).
+    public async Task<UserVm> GetUserAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        return await context.Users
+            .AsNoTracking()
+            .Where(u => u.UserId == userId)
+            .Select(u => new UserVm(
+                u.UserId,
+                u.Username,
+                u.Password,
+                u.EmailAddress,
+                u.Verified,
+                u.Active,
+                u.LoginAttempts,
+                u.LockedUntil,
                 u.AccountId))
             .SingleOrDefaultAsync(cancellationToken);
     }

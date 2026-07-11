@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 
 using Common.Infrastructure;
 
-namespace Security.Infrastructure.Entities;
+namespace TrackHub.AuthorityServer.Infrastructure.Entities;
 public sealed class User(
     string username,
     string password,
@@ -26,9 +26,10 @@ public sealed class User(
     public string Username { get; set; } = username;
     public string Password { get; set; } = password;
     public string EmailAddress { get; set; } = emailAddress;
-    public DateTime? Verified { get; set; }
+    public DateTimeOffset? Verified { get; set; }
     public bool Active { get; set; }
     public int LoginAttempts { get; set; }
+    public DateTimeOffset? LockedUntil { get; set; }
     public Guid AccountId { get; set; } = accountId;
     public Client? Client { get; set; }
 }

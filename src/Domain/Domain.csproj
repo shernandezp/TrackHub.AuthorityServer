@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Security.Domain</RootNamespace>
-    <AssemblyName>Security.Domain</AssemblyName>
+    <RootNamespace>TrackHub.AuthorityServer.Domain</RootNamespace>
+    <AssemblyName>TrackHub.AuthorityServer.Domain</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="TrackHubCommon.Domain" />

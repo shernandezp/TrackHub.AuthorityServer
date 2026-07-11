@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Security.Infrastructure;
+using TrackHub.AuthorityServer.Infrastructure;
 
 #nullable disable
 
-namespace Security.Infrastructure.Migrations.SecurityDb
+namespace TrackHub.AuthorityServer.Infrastructure.Migrations.SecurityDb
 {
     [DbContext(typeof(SecurityDbContext))]
     partial class SecurityDbContextModelSnapshot : ModelSnapshot
@@ -17,12 +17,12 @@ namespace Security.Infrastructure.Migrations.SecurityDb
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.8")
+                .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Security.Infrastructure.Entities.Client", b =>
+            modelBuilder.Entity("TrackHub.AuthorityServer.Infrastructure.Entities.Client", b =>
                 {
                     b.Property<Guid>("ClientId")
                         .ValueGeneratedOnAdd()
@@ -58,7 +58,7 @@ namespace Security.Infrastructure.Migrations.SecurityDb
                     b.ToTable("clients", "security");
                 });
 
-            modelBuilder.Entity("Security.Infrastructure.Entities.DriverCredential", b =>
+            modelBuilder.Entity("TrackHub.AuthorityServer.Infrastructure.Entities.DriverCredential", b =>
                 {
                     b.Property<Guid>("DriverCredentialId")
                         .ValueGeneratedOnAdd()
@@ -127,20 +127,20 @@ namespace Security.Infrastructure.Migrations.SecurityDb
                     b.ToTable("driver_credentials", "security");
                 });
 
-            modelBuilder.Entity("Security.Infrastructure.Entities.User", b =>
+            modelBuilder.Entity("TrackHub.AuthorityServer.Infrastructure.Entities.User", b =>
                 {
                     b.Property<Guid>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<bool>("Active")
-                        .HasColumnType("boolean")
-                        .HasColumnName("active");
-
                     b.Property<Guid>("AccountId")
                         .HasColumnType("uuid")
                         .HasColumnName("accountid");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("boolean")
+                        .HasColumnName("active");
 
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
@@ -160,6 +160,10 @@ namespace Security.Infrastructure.Migrations.SecurityDb
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
 
+                    b.Property<DateTimeOffset?>("LockedUntil")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("lockeduntil");
+
                     b.Property<int>("LoginAttempts")
                         .HasColumnType("integer")
                         .HasColumnName("loginattempts");
@@ -176,7 +180,7 @@ namespace Security.Infrastructure.Migrations.SecurityDb
                         .HasColumnType("character varying(200)")
                         .HasColumnName("username");
 
-                    b.Property<DateTime?>("Verified")
+                    b.Property<DateTimeOffset?>("Verified")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("verified");
 
@@ -185,16 +189,16 @@ namespace Security.Infrastructure.Migrations.SecurityDb
                     b.ToTable("users", "security");
                 });
 
-            modelBuilder.Entity("Security.Infrastructure.Entities.Client", b =>
+            modelBuilder.Entity("TrackHub.AuthorityServer.Infrastructure.Entities.Client", b =>
                 {
-                    b.HasOne("Security.Infrastructure.Entities.User", "User")
+                    b.HasOne("TrackHub.AuthorityServer.Infrastructure.Entities.User", "User")
                         .WithOne("Client")
-                        .HasForeignKey("Security.Infrastructure.Entities.Client", "UserId");
+                        .HasForeignKey("TrackHub.AuthorityServer.Infrastructure.Entities.Client", "UserId");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Security.Infrastructure.Entities.User", b =>
+            modelBuilder.Entity("TrackHub.AuthorityServer.Infrastructure.Entities.User", b =>
                 {
                     b.Navigation("Client");
                 });

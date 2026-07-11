@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Security.Application</RootNamespace>
-    <AssemblyName>Security.Application</AssemblyName>
+    <RootNamespace>TrackHub.AuthorityServer.Application</RootNamespace>
+    <AssemblyName>TrackHub.AuthorityServer.Application</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="TrackHubCommon.Application" />

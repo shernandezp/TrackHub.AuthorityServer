@@ -18,14 +18,14 @@ using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Security.Application.Users.Queries.GetUsers;
+using TrackHub.AuthorityServer.Application.Users.Queries.GetUsers;
 using System.Security.Authentication;
 using Microsoft.Extensions.Localization;
 using Common.Application.Exceptions;
-using Security.Application.Drivers.Queries.AuthenticateDriver;
-using Web.Models;
+using TrackHub.AuthorityServer.Application.Drivers.Queries.AuthenticateDriver;
+using TrackHub.AuthorityServer.Web.Models;
 
-namespace Web.Controllers;
+namespace TrackHub.AuthorityServer.Web.Controllers;
 
 public class LoginController(ISender sender, IStringLocalizer<LoginController> localizer, ILogger<LoginController> logger) : Controller
 {

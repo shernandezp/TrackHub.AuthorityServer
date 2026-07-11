@@ -13,7 +13,7 @@
 //  limitations under the License.
 //
 
-namespace Security.Domain.Models;
+namespace TrackHub.AuthorityServer.Domain.Models;
 
 public sealed record DriverCredentialAuthenticationVm(
     Guid DriverCredentialId,
