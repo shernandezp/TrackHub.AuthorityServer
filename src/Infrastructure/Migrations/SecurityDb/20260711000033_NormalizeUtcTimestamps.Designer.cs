@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TrackHub.AuthorityServer.Infrastructure;
@@ -11,9 +12,11 @@ using TrackHub.AuthorityServer.Infrastructure;
 namespace TrackHub.AuthorityServer.Infrastructure.Migrations.SecurityDb
 {
     [DbContext(typeof(SecurityDbContext))]
-    partial class SecurityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260711000033_NormalizeUtcTimestamps")]
+    partial class NormalizeUtcTimestamps
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -159,10 +162,6 @@ namespace TrackHub.AuthorityServer.Infrastructure.Migrations.SecurityDb
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("LockedUntil")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("lockeduntil");
 
                     b.Property<int>("LoginAttempts")
                         .HasColumnType("integer")

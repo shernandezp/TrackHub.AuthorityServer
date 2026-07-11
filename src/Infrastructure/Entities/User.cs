@@ -26,7 +26,7 @@ public sealed class User(
     public string Username { get; set; } = username;
     public string Password { get; set; } = password;
     public string EmailAddress { get; set; } = emailAddress;
-    public DateTime? Verified { get; set; }
+    public DateTimeOffset? Verified { get; set; }
     public bool Active { get; set; }
     public int LoginAttempts { get; set; }
     public DateTimeOffset? LockedUntil { get; set; }

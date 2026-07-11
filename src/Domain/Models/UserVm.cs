@@ -19,7 +19,7 @@ public record struct UserVm(
     string Username,
     string Password,
     string EmailAddress,
-    DateTime? Verified,
+    DateTimeOffset? Verified,
     bool Active,
     int LoginAttempts,
     DateTimeOffset? LockedUntil,

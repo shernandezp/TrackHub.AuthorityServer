@@ -13,6 +13,7 @@
 //  limitations under the License.
 //
 
+using Common.Infrastructure;
 using TrackHub.AuthorityServer.Infrastructure.Configurations;
 using TrackHub.AuthorityServer.Infrastructure.Entities;
 using TrackHub.AuthorityServer.Infrastructure.Interfaces;
@@ -31,5 +32,11 @@ public class SecurityDbContext(DbContextOptions<SecurityDbContext> options) : Db
         builder.ApplyConfiguration(new UserConfiguration());
         builder.ApplyConfiguration(new ClientConfiguration());
         builder.ApplyConfiguration(new DriverCredentialConfiguration());
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        base.ConfigureConventions(configurationBuilder);
+        configurationBuilder.UseUtcTimestamps();
     }
 }

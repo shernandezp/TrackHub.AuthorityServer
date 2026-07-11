@@ -47,7 +47,7 @@ public class GetUsersQueryHandlerTests
             Username: "user",
             Password: CorrectPassword.HashPassword(),
             EmailAddress: "user@mail.com",
-            Verified: DateTime.UtcNow,
+            Verified: DateTimeOffset.UtcNow,
             Active: true,
             LoginAttempts: loginAttempts,
             LockedUntil: lockedUntil,

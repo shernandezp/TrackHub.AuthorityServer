@@ -13,6 +13,8 @@
 //  limitations under the License.
 //
 
+using Common.Infrastructure;
+
 namespace TrackHub.AuthorityServer.Infrastructure;
 public class AuthorityDbContext(DbContextOptions<AuthorityDbContext> options) : DbContext(options)
 {
@@ -20,5 +22,11 @@ public class AuthorityDbContext(DbContextOptions<AuthorityDbContext> options) : 
     {
         base.OnModelCreating(builder);
         builder.UseOpenIddict<long>();
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        base.ConfigureConventions(configurationBuilder);
+        configurationBuilder.UseUtcTimestamps();
     }
 }
