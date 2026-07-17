@@ -13,17 +13,18 @@
 //  limitations under the License.
 //
 
-using System.Globalization;
-using System.Resources;
+using Common.Domain.Localization;
 
 namespace TrackHub.AuthorityServer.Web.Helpers;
 
+// Request-culture lookups through the shared Common ResourceLocalizer (UseRequestLocalization
+// sets the ambient culture); the resx files stay the single source of the texts.
 public static class ValidationMessages
 {
-    private static readonly ResourceManager ResourceManager = new("TrackHub.AuthorityServer.Web.Resources.ValidationMessages", typeof(ValidationMessages).Assembly);
+    private static readonly ResourceLocalizer Localizer = new("TrackHub.AuthorityServer.Web.Resources.ValidationMessages", typeof(ValidationMessages).Assembly);
 
-    public static string EmailRequired => ResourceManager.GetString("EmailRequired", CultureInfo.CurrentCulture)!;
-    public static string InvalidEmailAddress => ResourceManager.GetString("InvalidEmail", CultureInfo.CurrentCulture)!;
-    public static string PasswordRequired => ResourceManager.GetString("PasswordRequired", CultureInfo.CurrentCulture)!;
-    public static string PasswordLength => ResourceManager.GetString("InvalidPassword", CultureInfo.CurrentCulture)!;
+    public static string EmailRequired => Localizer.GetString("EmailRequired");
+    public static string InvalidEmailAddress => Localizer.GetString("InvalidEmail");
+    public static string PasswordRequired => Localizer.GetString("PasswordRequired");
+    public static string PasswordLength => Localizer.GetString("InvalidPassword");
 }

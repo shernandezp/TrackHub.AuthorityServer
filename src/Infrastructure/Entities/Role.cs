@@ -1,4 +1,4 @@
-// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2026 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -13,14 +13,12 @@
 //  limitations under the License.
 //
 
-using TrackHub.AuthorityServer.Infrastructure.Entities;
+namespace TrackHub.AuthorityServer.Infrastructure.Entities;
 
-namespace TrackHub.AuthorityServer.Infrastructure.Interfaces;
-public interface ISecurityDbContext
+// Read-only projection of security.roles — only the columns the token-issuance flow needs
+// (bounded-context minimal mapping, findings SVD-04). Security owns the table.
+public sealed class Role
 {
-    DbSet<User> Users { get; set; }
-    DbSet<Client> Clients { get; set; }
-    DbSet<DriverCredential> DriverCredentials { get; set; }
-    DbSet<Role> Roles { get; set; }
-    DbSet<UserRole> UserRoles { get; set; }
+    public int RoleId { get; set; }
+    public string Name { get; set; } = string.Empty;
 }
