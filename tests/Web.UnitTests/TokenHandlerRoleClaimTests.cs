@@ -21,7 +21,7 @@ using TrackHub.AuthorityServer.Web.Endpoints;
 
 namespace TrackHub.AuthorityServer.Web.UnitTests;
 
-// Spec 05 role-claim fix, refresh leg: Security stays the role source of truth — every
+// Refresh leg: Security stays the role source of truth — every
 // refresh-token exchange re-resolves the role claim, so a role change propagates within one
 // access-token lifetime instead of waiting for a re-login.
 [TestFixture]

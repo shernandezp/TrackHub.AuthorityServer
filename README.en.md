@@ -99,7 +99,7 @@ Export-PfxCertificate -Cert $cert -FilePath "certificate.pfx" -Password $passwor
 
 ## Database Initialization
 
-The [ClientSeeder.cs](https://github.com/shernandezp/TrackHub.AuthorityServer/blob/master/src/Web/ClientSeeder.cs) class initializes the OpenIdDict database with clients for web, mobile, and backend services.
+The [ClientSeeder](https://github.com/shernandezp/TrackHub.AuthorityServer/blob/master/src/ClientSeeder/Seeder.cs) project initializes the OpenIdDict database with clients for web, mobile, and backend services.
 
 ## User Interface
 

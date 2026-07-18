@@ -16,7 +16,7 @@
 namespace TrackHub.AuthorityServer.Infrastructure.Entities;
 
 // Read-only projection of security.roles — only the columns the token-issuance flow needs
-// (bounded-context minimal mapping, findings SVD-04). Security owns the table.
+// (bounded-context minimal mapping). Security owns the table.
 public sealed class Role
 {
     public int RoleId { get; set; }

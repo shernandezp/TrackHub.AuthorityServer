@@ -19,7 +19,7 @@ namespace TrackHub.AuthorityServer.Application.Users.Queries.GetUserRole;
 
 /// <summary>
 /// The authenticated user's most privileged role name for the access token's role claim
-/// (spec 05: resource services derive `ICurrentPrincipal.Role` — and with it the privileged
+/// (resource services derive `ICurrentPrincipal.Role` — and with it the privileged
 /// account-wide reads and role-addressed notifications — from this claim).
 /// </summary>
 public readonly record struct GetUserRoleQuery(Guid UserId) : IRequest<string?>;

@@ -18,7 +18,7 @@ using TrackHub.AuthorityServer.Domain.Interfaces;
 
 namespace TrackHub.AuthorityServer.Application.UnitTests.Users;
 
-// Spec 05 role-claim fix: the login flow resolves the user's role through this query so the
+// The login flow resolves the user's role through this query so the
 // access token can carry it (before, user tokens had no role claim and every IsPrivileged
 // check on the resource services silently fell back to non-privileged).
 [TestFixture]

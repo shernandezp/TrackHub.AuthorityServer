@@ -15,7 +15,7 @@
 
 namespace TrackHub.AuthorityServer.Infrastructure.Entities;
 
-// Read-only projection of security.user_role (bounded-context minimal mapping, findings SVD-04).
+// Read-only projection of security.user_role (bounded-context minimal mapping).
 public sealed class UserRole
 {
     public Guid UserId { get; set; }
