@@ -85,6 +85,11 @@ public sealed class AuthorizationHandler
             }
 
             claims.Add(AccessTokenClaim("user_id", subject));
+
+            // Forward the user's role into the access token (resource services derive
+            // ICurrentPrincipal.Role from it). Older cookies may predate the claim — the user
+            // picks it up on their next login.
+            TryAddClaim(cookiePrincipal, claims, ClaimTypes.Role);
         }
 
         // Create a claims identity and principal.

@@ -50,17 +50,24 @@ public sealed class TokenHandler(
 
             // On refresh, re-validate the subject so that a deactivated/locked user or a driver whose
             // credential was revoked cannot keep exchanging refresh tokens for the token's full lifetime.
-            if (request.IsRefreshTokenGrantType()
-                && !await IsSubjectStillValidAsync(claimsPrincipal, context.RequestAborted))
+            if (request.IsRefreshTokenGrantType())
             {
-                return Results.Forbid(
-                    authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme],
-                    properties: new AuthenticationProperties(new Dictionary<string, string?>
-                    {
-                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = OpenIddictConstants.Errors.InvalidGrant,
-                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                            "The subject associated with the refresh token is no longer valid."
-                    }));
+                if (!await IsSubjectStillValidAsync(claimsPrincipal, context.RequestAborted))
+                {
+                    return Results.Forbid(
+                        authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme],
+                        properties: new AuthenticationProperties(new Dictionary<string, string?>
+                        {
+                            [OpenIddictServerAspNetCoreConstants.Properties.Error] = OpenIddictConstants.Errors.InvalidGrant,
+                            [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
+                                "The subject associated with the refresh token is no longer valid."
+                        }));
+                }
+
+                // Security stays the source of truth for roles: the token's role claim is
+                // re-resolved on every refresh, so a role change propagates within one
+                // access-token lifetime instead of waiting for a re-login.
+                await RefreshUserRoleClaimAsync(claimsPrincipal, context.RequestAborted);
             }
 
             // Return the result based on the claims principal
@@ -115,6 +122,37 @@ public sealed class TokenHandler(
         else
         {
             throw new InvalidOperationException("The specified grant type is not supported.");
+        }
+    }
+
+    // Replaces the role claim with the user's current role (most privileged, from security.user_role)
+    // so refreshed access tokens track role changes without a re-login.
+    internal async Task RefreshUserRoleClaimAsync(ClaimsPrincipal principal, CancellationToken cancellationToken)
+    {
+        var principalType = principal.FindFirst("principal_type")?.Value ?? "User";
+        if (!string.Equals(principalType, "User", StringComparison.OrdinalIgnoreCase)
+            || principal.Identity is not ClaimsIdentity identity)
+        {
+            return;
+        }
+
+        var subject = principal.FindFirst("user_id")?.Value
+            ?? principal.FindFirst(OpenIddictConstants.Claims.Subject)?.Value;
+        if (!Guid.TryParse(subject, out var userId))
+        {
+            return;
+        }
+
+        var role = await userReader.GetUserRoleAsync(userId, cancellationToken);
+        foreach (var stale in identity.FindAll(ClaimTypes.Role).ToList())
+        {
+            identity.RemoveClaim(stale);
+        }
+
+        if (!string.IsNullOrEmpty(role))
+        {
+            identity.AddClaim(new Claim(ClaimTypes.Role, role)
+                .SetDestinations(OpenIddictConstants.Destinations.AccessToken));
         }
     }
 

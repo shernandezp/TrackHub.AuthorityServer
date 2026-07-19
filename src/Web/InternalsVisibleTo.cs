@@ -1,4 +1,4 @@
-// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2026 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -13,14 +13,6 @@
 //  limitations under the License.
 //
 
-using TrackHub.AuthorityServer.Infrastructure.Entities;
+using System.Runtime.CompilerServices;
 
-namespace TrackHub.AuthorityServer.Infrastructure.Interfaces;
-public interface ISecurityDbContext
-{
-    DbSet<User> Users { get; set; }
-    DbSet<Client> Clients { get; set; }
-    DbSet<DriverCredential> DriverCredentials { get; set; }
-    DbSet<Role> Roles { get; set; }
-    DbSet<UserRole> UserRoles { get; set; }
-}
+[assembly: InternalsVisibleTo("Web.UnitTests")]

@@ -1,4 +1,4 @@
-// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2026 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -13,14 +13,19 @@
 //  limitations under the License.
 //
 
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Common.Domain.Constants;
 using TrackHub.AuthorityServer.Infrastructure.Entities;
 
-namespace TrackHub.AuthorityServer.Infrastructure.Interfaces;
-public interface ISecurityDbContext
+namespace TrackHub.AuthorityServer.Infrastructure.Configurations;
+
+public class RoleConfiguration : IEntityTypeConfiguration<Role>
 {
-    DbSet<User> Users { get; set; }
-    DbSet<Client> Clients { get; set; }
-    DbSet<DriverCredential> DriverCredentials { get; set; }
-    DbSet<Role> Roles { get; set; }
-    DbSet<UserRole> UserRoles { get; set; }
+    public void Configure(EntityTypeBuilder<Role> builder)
+    {
+        builder.ToTable(name: TableMetadata.Role, schema: SchemaMetadata.Security);
+        builder.HasKey(x => x.RoleId);
+        builder.Property(x => x.RoleId).HasColumnName("id");
+        builder.Property(x => x.Name).HasColumnName("name");
+    }
 }

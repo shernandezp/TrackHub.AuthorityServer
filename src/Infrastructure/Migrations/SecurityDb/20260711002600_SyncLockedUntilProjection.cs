@@ -8,8 +8,8 @@ namespace TrackHub.AuthorityServer.Infrastructure.Migrations.SecurityDb
     public partial class SyncLockedUntilProjection : Migration
     {
         // Snapshot-sync only (no DDL): the physical security.users.lockeduntil column already
-        // exists — it was added by TrackHubSecurity migration 20260707034921_AddSecurityLockoutAndUniqueIndexes.
-        // Per SVD-04, this context is a read-only projection of TrackHubSecurity's tables and
+        // exists — it is owned and created by TrackHubSecurity.
+        // This context is a read-only projection of TrackHubSecurity's tables and
         // Security owns the DDL for them; emitting AddColumn here could fail or double-apply
         // against the shared physical database.
 

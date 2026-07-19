@@ -22,7 +22,7 @@ using TrackHub.AuthorityServer.Domain.Records;
 
 namespace TrackHub.AuthorityServer.Application.UnitTests.Users;
 
-// Spec 02 §7.2 / AC6: user login lockout mirrors the driver model — a rolling failed-attempt counter
+// User login lockout mirrors the driver model — a rolling failed-attempt counter
 // that trips a 15-minute timed lock on the 5th failure and resets on success. A locked account is
 // denied before the password is checked (no lockout-vs-wrong-password enumeration, no counter change).
 [TestFixture]

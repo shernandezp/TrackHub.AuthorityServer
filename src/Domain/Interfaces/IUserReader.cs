@@ -23,4 +23,10 @@ public interface IUserReader
     Task<UserVm> GetUserAsync(UserLoginDto user, CancellationToken cancellationToken);
 
     Task<UserVm> GetUserAsync(Guid userId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// The user's most privileged role name (Administrator &lt; Manager &lt; User by seeded id
+    /// order), for the access token's role claim; null when the user has no role row.
+    /// </summary>
+    Task<string?> GetUserRoleAsync(Guid userId, CancellationToken cancellationToken);
 }

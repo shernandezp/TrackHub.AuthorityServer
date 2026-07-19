@@ -38,6 +38,19 @@ public sealed class UserReader(SecurityDbContext context) : IUserReader
             .SingleOrDefaultAsync(cancellationToken);
     }
 
+    // The user's most privileged role name for the access token's role claim (the seeded
+    // hierarchy is Administrator(1) → Manager(2) → User(3), so the lowest id wins).
+    public async Task<string?> GetUserRoleAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        return await context.UserRoles
+            .AsNoTracking()
+            .Where(ur => ur.UserId == userId)
+            .Join(context.Roles, ur => ur.RoleId, r => r.RoleId, (ur, r) => new { r.RoleId, r.Name })
+            .OrderBy(x => x.RoleId)
+            .Select(x => x.Name)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
     // Loads a user by id for refresh-token subject re-validation (active/locked state).
     public async Task<UserVm> GetUserAsync(Guid userId, CancellationToken cancellationToken)
     {

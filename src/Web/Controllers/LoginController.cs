@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using TrackHub.AuthorityServer.Application.Users.Queries.GetUserRole;
 using TrackHub.AuthorityServer.Application.Users.Queries.GetUsers;
 using System.Security.Authentication;
 using Microsoft.Extensions.Localization;
@@ -85,6 +86,15 @@ public class LoginController(ISender sender, IStringLocalizer<LoginController> l
                 new("user_id", $"{user.UserId}"),
                 new("account_id", $"{user.AccountId}")
             };
+
+            // The role claim feeds ICurrentPrincipal.Role on every resource service (privileged
+            // account-wide reads, role-addressed notifications). Users without a role row simply
+            // carry no role claim.
+            var role = await sender.Send(new GetUserRoleQuery(user.UserId));
+            if (!string.IsNullOrEmpty(role))
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             // Create a claims identity using the claims and the default authentication scheme.
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

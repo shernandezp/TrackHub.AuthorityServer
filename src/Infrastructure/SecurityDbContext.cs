@@ -25,6 +25,8 @@ public class SecurityDbContext(DbContextOptions<SecurityDbContext> options) : Db
     public DbSet<User> Users { get; set; }
     public DbSet<Client> Clients { get; set; }
     public DbSet<DriverCredential> DriverCredentials { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<UserRole> UserRoles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -32,6 +34,8 @@ public class SecurityDbContext(DbContextOptions<SecurityDbContext> options) : Db
         builder.ApplyConfiguration(new UserConfiguration());
         builder.ApplyConfiguration(new ClientConfiguration());
         builder.ApplyConfiguration(new DriverCredentialConfiguration());
+        builder.ApplyConfiguration(new RoleConfiguration());
+        builder.ApplyConfiguration(new UserRoleConfiguration());
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
