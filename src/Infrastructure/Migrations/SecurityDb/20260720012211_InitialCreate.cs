@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -41,6 +42,33 @@ namespace TrackHub.AuthorityServer.Infrastructure.Migrations.SecurityDb
                 });
 
             migrationBuilder.CreateTable(
+                name: "roles",
+                schema: "security",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_roles", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "user_role",
+                schema: "security",
+                columns: table => new
+                {
+                    userid = table.Column<Guid>(type: "uuid", nullable: false),
+                    roleid = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_user_role", x => new { x.userid, x.roleid });
+                });
+
+            migrationBuilder.CreateTable(
                 name: "users",
                 schema: "security",
                 columns: table => new
@@ -49,9 +77,10 @@ namespace TrackHub.AuthorityServer.Infrastructure.Migrations.SecurityDb
                     username = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     password = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     emailaddress = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    verified = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    verified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     active = table.Column<bool>(type: "boolean", nullable: false),
                     loginattempts = table.Column<int>(type: "integer", nullable: false),
+                    lockeduntil = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     accountid = table.Column<Guid>(type: "uuid", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
@@ -104,6 +133,14 @@ namespace TrackHub.AuthorityServer.Infrastructure.Migrations.SecurityDb
 
             migrationBuilder.DropTable(
                 name: "driver_credentials",
+                schema: "security");
+
+            migrationBuilder.DropTable(
+                name: "roles",
+                schema: "security");
+
+            migrationBuilder.DropTable(
+                name: "user_role",
                 schema: "security");
 
             migrationBuilder.DropTable(
