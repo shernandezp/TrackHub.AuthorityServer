@@ -135,6 +135,9 @@
   <data name="LoginTitle" xml:space="preserve">
     <value>Login</value>
   </data>
+  <data name="PlatformStatusLink" xml:space="preserve">
+    <value>Platform status</value>
+  </data>
   <data name="CorrectErrors" xml:space="preserve">
     <value>Please correct the errors and try again.</value>
   </data>

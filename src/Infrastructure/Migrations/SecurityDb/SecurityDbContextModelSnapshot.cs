@@ -17,7 +17,7 @@ namespace TrackHub.AuthorityServer.Infrastructure.Migrations.SecurityDb
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.9")
+                .HasAnnotation("ProductVersion", "10.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -127,6 +127,25 @@ namespace TrackHub.AuthorityServer.Infrastructure.Migrations.SecurityDb
                     b.ToTable("driver_credentials", "security");
                 });
 
+            modelBuilder.Entity("TrackHub.AuthorityServer.Infrastructure.Entities.Role", b =>
+                {
+                    b.Property<int>("RoleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RoleId"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.HasKey("RoleId");
+
+                    b.ToTable("roles", "security");
+                });
+
             modelBuilder.Entity("TrackHub.AuthorityServer.Infrastructure.Entities.User", b =>
                 {
                     b.Property<Guid>("UserId")
@@ -187,6 +206,21 @@ namespace TrackHub.AuthorityServer.Infrastructure.Migrations.SecurityDb
                     b.HasKey("UserId");
 
                     b.ToTable("users", "security");
+                });
+
+            modelBuilder.Entity("TrackHub.AuthorityServer.Infrastructure.Entities.UserRole", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("userid");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer")
+                        .HasColumnName("roleid");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.ToTable("user_role", "security");
                 });
 
             modelBuilder.Entity("TrackHub.AuthorityServer.Infrastructure.Entities.Client", b =>

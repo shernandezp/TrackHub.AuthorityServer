@@ -28,7 +28,7 @@ using TrackHub.AuthorityServer.Web.Models;
 
 namespace TrackHub.AuthorityServer.Web.Controllers;
 
-public class LoginController(ISender sender, IStringLocalizer<LoginController> localizer, ILogger<LoginController> logger) : Controller
+public class LoginController(ISender sender, IStringLocalizer<LoginController> localizer, ILogger<LoginController> logger, IConfiguration configuration) : Controller
 {
     private const string DriverMobileClientId = "driver_mobile_client";
 
@@ -39,7 +39,30 @@ public class LoginController(ISender sender, IStringLocalizer<LoginController> l
     public IActionResult Index(string? returnUrl = null)
     {
         ViewData["ReturnUrl"] = returnUrl;
-        return View(new LoginViewModel());
+        return View(new LoginViewModel { PlatformStatusUrl = PlatformStatusUrl() });
+    }
+
+    /// <summary>
+    /// Absolute URL of the portal's public status page, so a user whose sign-in failed can check
+    /// whether the platform is the cause. Derived from the already-configured portal origin
+    /// (<c>AllowedCorsOrigins</c>) rather than hardcoded; returns null when it is unset or
+    /// unusable, in which case the view simply omits the link.
+    /// </summary>
+    private string? PlatformStatusUrl()
+    {
+        var configured = configuration.GetSection("AllowedCorsOrigins").Get<string>();
+        if (string.IsNullOrWhiteSpace(configured))
+        {
+            return null;
+        }
+
+        // The setting is a single origin today, but its name is plural — take the
+        // first entry so a comma-separated value can never produce a malformed URL.
+        var origin = configured.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).FirstOrDefault();
+
+        return Uri.TryCreate(origin, UriKind.Absolute, out var baseUri)
+            ? new Uri(baseUri, "/status").ToString()
+            : null;
     }
 
     // POST: /Login
@@ -50,6 +73,9 @@ public class LoginController(ISender sender, IStringLocalizer<LoginController> l
     public async Task<IActionResult> Index(LoginViewModel model)
     {
         ViewData["ReturnUrl"] = model.ReturnUrl;
+        // Re-resolved on every POST: a failed sign-in re-renders this view, and that is
+        // precisely when the user needs the status link (it is not round-tripped by the form).
+        model.PlatformStatusUrl = PlatformStatusUrl();
 
         if (!ModelState.IsValid)
         {

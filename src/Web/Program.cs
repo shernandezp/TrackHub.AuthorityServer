@@ -111,11 +111,16 @@ app.UseForwardedHeaders(forwardedHeadersOptions);
 
 app.UsePathBase("/Identity");
 
+// CORS MUST precede UseHealthChecks: the latter is terminal middleware (it writes the response and
+// never calls next), so registering it first would emit /Identity/health with no
+// Access-Control-Allow-Origin and the portal's public status page could never read it — the Sign-in
+// tile would report an outage while sign-in was healthy. Every other service already orders it this
+// way; AuthorityServer was the outlier.
+app.UseCors("AllowFrontend");
+
 app.UseHealthChecks("/health");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
-app.UseCors("AllowFrontend");
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

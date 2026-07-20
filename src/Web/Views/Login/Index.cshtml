@@ -24,3 +24,12 @@
     }
     <button type="submit" class="btn btn-dark btn-block mt-3">@Localizer["LoginLabel"]</button>
 </form>
+@if (!string.IsNullOrEmpty(Model.PlatformStatusUrl))
+{
+    @* Helps when sign-in FAILS (bad credentials, suspended account, downstream error). If the
+       AuthorityServer itself is down no page renders at all — the help topic tells users to
+       bookmark the status page for that case. *@
+    <footer>
+        <small><a href="@Model.PlatformStatusUrl">@Localizer["PlatformStatusLink"]</a></small>
+    </footer>
+}
