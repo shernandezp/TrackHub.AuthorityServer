@@ -18,6 +18,7 @@ using Common.Mediator;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -56,7 +57,12 @@ public class LoginControllerRoleClaimTests
             .AddSingleton(_authentication.Object)
             .BuildServiceProvider();
 
-        _controller = new LoginController(_sender.Object, Mock.Of<IStringLocalizer<LoginController>>(), NullLogger<LoginController>.Instance)
+        // A configured portal origin so the login view can render its status-page link.
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?> { ["AllowedCorsOrigins"] = "https://portal.test" })
+            .Build();
+
+        _controller = new LoginController(_sender.Object, Mock.Of<IStringLocalizer<LoginController>>(), NullLogger<LoginController>.Instance, configuration)
         {
             ControllerContext = new ControllerContext
             {

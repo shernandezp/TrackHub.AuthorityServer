@@ -28,4 +28,10 @@ public sealed class LoginViewModel
     public string ReturnUrl { get; set; } = "?";
     public bool AuthenticationFailed { get; set; }
     public string AuthenticationFailedMessage { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Absolute URL of the portal's public status page, or null when no portal origin is
+    /// configured (the view then omits the link). Never hardcoded — see LoginController.
+    /// </summary>
+    public string? PlatformStatusUrl { get; set; }
 }
