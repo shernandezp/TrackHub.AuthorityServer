@@ -23,7 +23,7 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
 {
     public void Configure(EntityTypeBuilder<Role> builder)
     {
-        builder.ToTable(name: TableMetadata.Role, schema: SchemaMetadata.Security);
+        builder.ToTable(name: TableMetadata.Role, schema: SchemaMetadata.Security, t => t.ExcludeFromMigrations());
         builder.HasKey(x => x.RoleId);
         builder.Property(x => x.RoleId).HasColumnName("id");
         builder.Property(x => x.Name).HasColumnName("name");

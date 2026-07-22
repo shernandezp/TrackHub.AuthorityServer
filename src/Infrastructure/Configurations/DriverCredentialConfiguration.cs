@@ -23,7 +23,7 @@ public sealed class DriverCredentialConfiguration : IEntityTypeConfiguration<Dri
 {
     public void Configure(EntityTypeBuilder<DriverCredential> builder)
     {
-        builder.ToTable(name: TableMetadata.DriverCredential, schema: SchemaMetadata.Security);
+        builder.ToTable(name: TableMetadata.DriverCredential, schema: SchemaMetadata.Security, t => t.ExcludeFromMigrations());
 
         builder.Property(x => x.DriverCredentialId).HasColumnName("id");
         builder.Property(x => x.DriverId).HasColumnName("driverid");

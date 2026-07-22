@@ -24,7 +24,7 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
     public void Configure(EntityTypeBuilder<Client> builder)
     {
         //Table name
-        builder.ToTable(name: TableMetadata.Client, schema: SchemaMetadata.Security);
+        builder.ToTable(name: TableMetadata.Client, schema: SchemaMetadata.Security, t => t.ExcludeFromMigrations());
 
         //Column names
         builder.Property(x => x.ClientId).HasColumnName("id");
