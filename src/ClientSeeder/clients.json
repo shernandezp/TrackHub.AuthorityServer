@@ -63,6 +63,11 @@
       "clientId": "geofence_client",
       "clientSecret": "8c5f1d9b-3e72-4a06-b1c8-64f0d2a97e35",
       "scope": "service_scope"
+    },
+    {
+      "clientId": "trip_client",
+      "clientSecret": "96cd18c9-d1b6-424b-9e29-b17842046d01",
+      "scope": "service_scope"
     }
   ]
 }
