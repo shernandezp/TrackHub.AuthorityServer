@@ -1,264 +1,125 @@
 # TrackHub Authorization Service
 
-## Key Features
+[← Back to the landing page](README.md) · [Español](README.es.md)
 
-- **OAuth 2.0 & OpenID Connect**: Full compliance with industry-standard authentication protocols using OpenIdDict
-- **Authorization Code Flow with PKCE**: Secure authentication for SPA and mobile applications
-- **Client Credentials Flow**: Machine-to-machine authentication for backend microservices
-- **Token Management**: JWT token generation, validation, and revocation capabilities with audience-based scoping
-- **Multi-Client Support**: Configurable OAuth clients for web, mobile, and service applications with resource-based audience assignment
-- **Clean Architecture**: Layered architecture promoting maintainability and testability
-- **PostgreSQL Integration**: Secure user credential storage with BCrypt password hashing
-- **Customizable Login UI**: ASP.NET-based login interface with branding support
+The Authorization Service is TrackHub's **OpenIddict-based identity and OAuth 2.0 / OpenID Connect token server**. It authenticates users, drivers and service clients, and issues the access tokens (audience `trackhub_api`) that every other TrackHub service validates.
+
+It also hosts the ASP.NET login UI, and owns the OpenIddict tables in the `TrackHubSecurity` database.
 
 ---
 
-## Quick Start
+## What it provides
+
+- **Authorization Code Flow with PKCE** for public clients — web, mobile and driver mobile
+- **Client Credentials Flow** for backend services and partner integrations, with automatic tenant derivation
+- **Token management** — issue, refresh and revoke, with audience-based scoping
+- **A customizable login UI** with branding support
+- **BCrypt-hashed credential validation** against the Security-owned `security.users` table
+- **The role claim**, resolved at login and re-resolved on every refresh
+
+Full detail: **[Security and Identity](https://github.com/shernandezp/TrackHub/wiki/Security-and-Identity)** and **[Technology](https://github.com/shernandezp/TrackHub/wiki/Technology)** in the wiki.
+
+---
+
+## Quick start
 
 ### Prerequisites
 
-- .NET 10.0 SDK
+- .NET 10 SDK
 - PostgreSQL 14+
-- SSL Certificate (self-signed for development, CA-issued for production)
+- An SSL certificate — self-signed for development, CA-issued for production
+- The `TrackHubCommon.*` packages available from a local NuGet feed
 
-### Installation
+### Steps
 
-1. **Clone the repository**:
+1. **Clone**
+
    ```bash
    git clone https://github.com/shernandezp/TrackHub.AuthorityServer.git
    cd TrackHub.AuthorityServer
    ```
 
-2. **Configure the database connection** in `appsettings.json`:
+2. **Configure the database connection** in `src/Web/appsettings.json`:
+
    ```json
    {
      "ConnectionStrings": {
-       "SecurityConnection": "Host=localhost;Database=trackhub_security;Username=postgres;Password=yourpassword"
+       "DefaultConnection": "Host=localhost;Database=TrackHubSecurity;Username=postgres;Password=yourpassword"
      }
    }
    ```
 
 3. **Generate a self-signed certificate** (development only):
+
    ```powershell
    $cert = New-SelfSignedCertificate -DnsName "localhost" -CertStoreLocation "Cert:\CurrentUser\My"
    $password = ConvertTo-SecureString -String "openiddict" -Force -AsPlainText
    Export-PfxCertificate -Cert $cert -FilePath "certificate.pfx" -Password $password
    ```
 
-4. **Run database migrations**:
+4. **Apply migrations** — this creates the OpenIddict tables:
+
    ```bash
-   dotnet ef database update
+   dotnet ef database update --project src/Infrastructure --startup-project src/Web
    ```
 
-5. **Start the application**:
+5. **Register the OAuth clients**
+
+   ```bash
+   dotnet run --project src/ClientSeeder
+   ```
+
+6. **Run**
+
    ```bash
    dotnet run --project src/Web
    ```
 
-6. **Access the login page** at `https://localhost:5001`
+7. **Open the login page** at `https://localhost:<port>`.
 
 ---
 
-## Components and Resources
+## Project-specific notes
 
-| Component                 | Description                                             | Documentation                                                                 |
-|---------------------------|---------------------------------------------------------|-------------------------------------------------------------------------------|
-| OpenIDDict                | Framework for access control and authorization | [OpenIDDict Documentation](https://openiddict.com/)                           |
-| .NET Core                 | Development platform for modern applications   | [.NET Core Documentation](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-9/overview) |
-| Postgres                  | Relational database management system          | [Postgres Documentation](https://www.postgresql.org/)                         |
-| Clean Architecture Template | Template for ASP.NET clean architecture      | [GitHub - Clean Architecture Template](https://github.com/jasontaylordev/CleanArchitecture) |
+- **This service owns only the `OpenIddict*` tables.** Its `AuthorityDbContext` migration targets the `TrackHubSecurity` database and is part of the documented install sequence. Its `SecurityDbContext` is a narrow **read-only projection** of TrackHubSecurity-owned tables (`users`, `clients`, `driver_credentials`, `roles`, `user_role`, `service_client_permissions`), and its migration is deliberately **empty** — every configuration is `ExcludeFromMigrations()`. Do not add DDL there.
+- **A service client's tenant is derived, never supplied by the caller.** The `account_id` claim comes from the client's active rows in `security.service_client_permissions`, so a partner credential cannot widen its own reach:
+
+  | Client's effective grants | `account_id` claim |
+  |---|---|
+  | At least one `allowcrossaccount` grant (platform-internal identities) | **Not issued** — the token stays unscoped |
+  | Grants naming exactly one account | Issued automatically |
+  | Grants naming several accounts | **Requires the `account_id` request parameter** |
+  | No account-bound grant | Not issued |
+
+- **The optional `account_id` request parameter** lets a multi-account client name the tenant it wants. It can only *narrow*, never widen — the requested account must match one of the client's own active grants:
+
+  ```bash
+  curl -X POST https://<authority>/connect/token \
+    -d grant_type=client_credentials \
+    -d client_id=<partner_client> \
+    -d client_secret=<secret> \
+    -d scope=service_scope \
+    -d account_id=<account-guid>
+  ```
+
+  The endpoint answers `invalid_request` when the value is not a valid identifier, when the client holds no active grant for it, or when a multi-account client omits it. That last case is a deliberate rejection — issuing an arbitrary tenant would silently point a partner at the wrong customer.
+
+- **`UseCors` must run before `UseHealthChecks`.** This service originally had it inverted, which made the Sign-in tile on the public status page permanently unreadable — the page probes `/health` cross-origin with no token.
+- **Behind a reverse proxy**, `ForwardedHeaders` middleware trusts `X-Forwarded-Proto` and `X-Forwarded-For`, so OpenIddict correctly identifies HTTPS requests even though internal container traffic is HTTP.
+- **The role claim is for visibility scoping only.** Permission enforcement always goes through the Security API — this claim never grants anything. Users must sign in again to pick up a newly granted role.
+- Server-rendered login and validation messages come from `.resx` resources through `ResourceLocalizer`, resolved against the ambient request culture. Never hardcode them.
+- For production, use a certificate issued by a Certificate Authority.
 
 ---
 
-## Overview
+## Documentation
 
-The TrackHub Authorization Service leverages OpenIdDict for access control across applications and services. The following sections describe the authentication methods and system configuration.
+- **Technical** — the [TrackHub wiki](https://github.com/shernandezp/TrackHub/wiki): [Security and Identity](https://github.com/shernandezp/TrackHub/wiki/Security-and-Identity), [Technology](https://github.com/shernandezp/TrackHub/wiki/Technology), [Database](https://github.com/shernandezp/TrackHub/wiki/Database)
+- **User** — in the app: the Help button or **F1** on any screen
+- **Deployment** — [TrackHub.Deployment](https://github.com/shernandezp/TrackHub.Deployment)
 
-## Authentication Methods
-
-### Authorization Code Flow with PKCE
-This **Authorization Code Flow con PKCE** is used for authenticating frontend applications.
-
-### Client Credentials Flow
-The **Client Credentials Flow** provides authentication for backend services.
-
-Tokens issued by this flow carry `sub`, `role=service`, `client_id`, `principal_type=ServiceClient`
-and — when the client is tenant-bound — an `account_id` claim. The account is **not** supplied by
-the caller: it is derived from the client's active, in-effect rows in
-`security.service_client_permissions`, so a partner credential cannot widen its own reach.
-
-| Client's effective grants | `account_id` claim |
-|---|---|
-| At least one `allowcrossaccount` grant (the platform-internal identities: `router_client`, `syncworker_client`, `security_client`, `geofence_client`, `trip_client`) | **Not issued** — the token stays unscoped, which is what a platform-wide grant matches against. |
-| Grants naming exactly one account (the partner/TMS case) | Issued automatically for that account. |
-| Grants naming several accounts | **Requires the `account_id` request parameter** (see below). |
-| No account-bound grant | Not issued. |
-
-#### The optional `account_id` request parameter
-
-A service client whose grants span **more than one account** is ambiguous: the token endpoint will
-not guess a tenant, because issuing an arbitrary one would silently point a partner at the wrong
-customer. Such a client must name the tenant it wants on each token request:
-
-```bash
-curl -X POST https://<authority>/connect/token \
-  -d grant_type=client_credentials \
-  -d client_id=<partner_client> \
-  -d client_secret=<secret> \
-  -d scope=service_scope \
-  -d account_id=<account-guid>
-```
-
-The parameter is **optional and unnecessary for single-account and platform-internal clients**, and
-it can only narrow, never widen: the requested account must match one of the client's own active
-grants. The endpoint answers `invalid_request` when the value is not a valid identifier, when the
-client holds no active grant for the requested account, or when a multi-account client omits it
-entirely. That last case is a deliberate rejection rather than a fault — add the parameter, or seed
-the client with a single account grant.
-
-> **Provisioning a partner client:** seed its rows in `security.service_client_permissions` **with**
-> an `accountid` and **without** `allowcrossaccount`, then re-run `db-init`. A client seeded the
-> platform way (`allowcrossaccount = true`) receives no account claim and is treated as a
-> platform-internal identity.
-
-## Configuration
-
-Standard configurations for these flows are set in the following classes:
-
-- [Program.cs](https://github.com/shernandezp/TrackHub.AuthorityServer/blob/master/src/Web/Program.cs)
-- [DependencyInjection.cs](https://github.com/shernandezp/TrackHub.AuthorityServer/blob/master/src/Web/DependencyInjection.cs)
-
-> **Note:** For production, it is recommended to use a certificate issued by a Certificate Authority (CA). For testing, a self-signed certificate can be generated using PowerShell:
-
-```powershell
-$cert = New-SelfSignedCertificate -DnsName "localhost" -CertStoreLocation "Cert:\CurrentUser\My"
-$password = ConvertTo-SecureString -String "openiddict" -Force -AsPlainText
-Export-PfxCertificate -Cert $cert -FilePath "certificate.pfx" -Password $password
-```
-
-## Database Initialization
-
-The [ClientSeeder](https://github.com/shernandezp/TrackHub.AuthorityServer/blob/master/src/ClientSeeder/Seeder.cs) project initializes the OpenIdDict database with clients for web, mobile, and backend services.
-
-## User Interface
-
-The authorization service includes an ASP.NET application with a login screen. This screen validates credentials from the user table in the database and attaches the SID (Security Identifier Claim) to the token, which initiates the authorization cycle ([LoginController.cs](https://github.com/shernandezp/TrackHub.AuthorityServer/blob/master/src/Web/Controllers/LoginController.cs)).
-
-### Project Architecture
-
-The login screen interfaces with the database using Clean Architecture layers that employ Fluent Validation for credential validation and processing. These layers are built on the [Common](https://github.com/shernandezp/TrackHubCommon).
-
-## Database
-
-The `users` table resides in Postgres within the `security` schema, managed in the [Common](https://github.com/shernandezp/TrackHubSecurity).
-
-## Application Flow
-
-1. The user enters their credentials on the login screen of the web application (ASP.NET).
-2. The login screen submits the credentials to the **Authorization Service**.
-3. **OpenIdDict** verifies the credentials against the **Security Database** (Postgres).
-4. If valid, **OpenIdDict** generates a token that includes the SID (Security Identifier Claim).
-5. The token is returned to the web application, granting the user access to protected features.
-
-```plaintext
-┌───────────────────────────────────────────────────────────────────┐
-│                      Web Application (ASP.NET)                    │
-│                      ── Login Screen ──                           │
-│                                                                   │
-│   ┌──────────────┐                                                │
-│   │  User        │                                                │
-│   │ Submits      │                                                │
-│   │ Credentials  │                                                │
-│   └──────────────┘                                                │
-│          │                                                        │
-│          ▼                                                        │
-│    ┌───────────────────┐                                          │
-│    │                   │                                          │
-│    │ Authorization     │                                          │
-│    │ Service           │                                          │
-│    │ ─── OpenIdDict ───│                                          │
-│    │                   │                                          │
-│    └───────────────────┘                                          │
-│          │                                                        │
-│          ▼                                                        │
-│    ┌───────────────────────────────────────────────────────────┐  │
-│    │                      Database                             │  │
-│    │                        ─── Postgres ───                   │  │
-│    │         ┌─────────────────────────────────────┐           │  │
-│    │         │                                     │           │  │
-│    │         │  Security Schema (`security`)       │           │  │
-│    │         │ ─── Users Table (`users`) ───       │           │  │
-│    │         │                                     │           │  │
-│    │         └─────────────────────────────────────┘           │  │
-│    └───────────────────────────────────────────────────────────┘  │
-│          │                                                        │
-│          ▼                                                        │
-│   ┌────────────────────────────────────────────────────────────┐  │
-│   │    Successful Validation:                                  │  │
-│   │                                                            │  │
-│   │    - Token Generated with SID (Security Identifier Claim)  │  │
-│   │    - Token Returned to Web Application                     │  │
-│   └────────────────────────────────────────────────────────────┘  │
-│          │                                                        │
-│          ▼                                                        │
-│    ┌───────────────────────────────────────────────────────────┐  │
-│    │  Access to Protected Application Features                 │  │
-│    │       (Upon Successful Authentication)                    │  │
-│    └───────────────────────────────────────────────────────────┘  │
-└───────────────────────────────────────────────────────────────────┘
-
-───────── Service Authentication (Client Credentials Flow) ─────────
-
-┌───────────────────────────────────────────────────────────────────┐
-│                           External Service                        │
-│                     (Example: Client API)                         │
-│                                                                   │
-│   ┌──────────────────────────┐                                    │
-│   │  Requests                │                                    │
-│   │  Token                   │                                    │
-│   │  (Client Credentials)    │                                    │
-│   └──────────────────────────┘                                    │
-│          │                                                        │
-│          ▼                                                        │
-│    ┌───────────────────┐                                          │
-│    │                   │                                          │
-│    │ Authorization     │                                          │
-│    │ Service           │                                          │
-│    │ ─── OpenIdDict ───│                                          │
-│    │                   │                                          │
-│    └───────────────────┘                                          │
-│          │                                                        │
-│          ▼                                                        │
-│    ┌───────────────────────────────────────────────────────────┐  │
-│    │   External Service Credential Validation                  │  │
-│    │                                                           │  │
-│    │   - Service Token Generated (Client Credentials Flow)     │  │
-│    │   - Contains Access Permissions                           │  │
-│    │                                                           │  │
-│    └───────────────────────────────────────────────────────────┘  │
-│          │                                                        │
-│          ▼                                                        │
-│   ┌────────────────────────────────────────────────────────────┐  │
-│   │   Token returned to External Service for authentication    │  │
-│   │   and access to protected resources                        │  │
-│   └────────────────────────────────────────────────────────────┘  │
-└───────────────────────────────────────────────────────────────────┘
-```
-
-Key Points:
-- The **Client Credentials Flow** enables external services to authenticate without user credentials.
-- The **Authorization Service (OpenIdDict)** handles both user authorization and service authentication flows.
-- **Postgres Database** stores security information for users within the `security` schema and `users` table.
-
-## Docker Deployment
-
-When deployed behind a reverse proxy (e.g., nginx with SSL termination), the Authority Server uses `ForwardedHeaders` middleware to trust `X-Forwarded-Proto` and `X-Forwarded-For` headers. This ensures OpenIddict correctly identifies HTTPS requests even though internal container traffic uses HTTP.
-
-See [TrackHub.Deployment](https://github.com/shernandezp/TrackHub.Deployment) for full deployment instructions.
+---
 
 ## License
 
-This project is licensed under the Apache 2.0 License. See the [LICENSE file](https://www.apache.org/licenses/LICENSE-2.0) for more information.
-
-
-
+Apache License 2.0. See the [LICENSE file](https://www.apache.org/licenses/LICENSE-2.0) for more information.
