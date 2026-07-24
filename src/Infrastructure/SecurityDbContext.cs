@@ -27,6 +27,7 @@ public class SecurityDbContext(DbContextOptions<SecurityDbContext> options) : Db
     public DbSet<DriverCredential> DriverCredentials { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<UserRole> UserRoles { get; set; }
+    public DbSet<ServiceClientPermission> ServiceClientPermissions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -36,6 +37,7 @@ public class SecurityDbContext(DbContextOptions<SecurityDbContext> options) : Db
         builder.ApplyConfiguration(new DriverCredentialConfiguration());
         builder.ApplyConfiguration(new RoleConfiguration());
         builder.ApplyConfiguration(new UserRoleConfiguration());
+        builder.ApplyConfiguration(new ServiceClientPermissionConfiguration());
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)

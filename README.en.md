@@ -82,6 +82,45 @@ This **Authorization Code Flow con PKCE** is used for authenticating frontend ap
 ### Client Credentials Flow
 The **Client Credentials Flow** provides authentication for backend services.
 
+Tokens issued by this flow carry `sub`, `role=service`, `client_id`, `principal_type=ServiceClient`
+and — when the client is tenant-bound — an `account_id` claim. The account is **not** supplied by
+the caller: it is derived from the client's active, in-effect rows in
+`security.service_client_permissions`, so a partner credential cannot widen its own reach.
+
+| Client's effective grants | `account_id` claim |
+|---|---|
+| At least one `allowcrossaccount` grant (the platform-internal identities: `router_client`, `syncworker_client`, `security_client`, `geofence_client`, `trip_client`) | **Not issued** — the token stays unscoped, which is what a platform-wide grant matches against. |
+| Grants naming exactly one account (the partner/TMS case) | Issued automatically for that account. |
+| Grants naming several accounts | **Requires the `account_id` request parameter** (see below). |
+| No account-bound grant | Not issued. |
+
+#### The optional `account_id` request parameter
+
+A service client whose grants span **more than one account** is ambiguous: the token endpoint will
+not guess a tenant, because issuing an arbitrary one would silently point a partner at the wrong
+customer. Such a client must name the tenant it wants on each token request:
+
+```bash
+curl -X POST https://<authority>/connect/token \
+  -d grant_type=client_credentials \
+  -d client_id=<partner_client> \
+  -d client_secret=<secret> \
+  -d scope=service_scope \
+  -d account_id=<account-guid>
+```
+
+The parameter is **optional and unnecessary for single-account and platform-internal clients**, and
+it can only narrow, never widen: the requested account must match one of the client's own active
+grants. The endpoint answers `invalid_request` when the value is not a valid identifier, when the
+client holds no active grant for the requested account, or when a multi-account client omits it
+entirely. That last case is a deliberate rejection rather than a fault — add the parameter, or seed
+the client with a single account grant.
+
+> **Provisioning a partner client:** seed its rows in `security.service_client_permissions` **with**
+> an `accountid` and **without** `allowcrossaccount`, then re-run `db-init`. A client seeded the
+> platform way (`allowcrossaccount = true`) receives no account claim and is treated as a
+> platform-internal identity.
+
 ## Configuration
 
 Standard configurations for these flows are set in the following classes:

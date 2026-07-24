@@ -19,6 +19,7 @@ using OpenIddict.Abstractions;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using TrackHub.AuthorityServer.Domain.Interfaces;
+using TrackHub.AuthorityServer.Domain.Models;
 
 namespace TrackHub.AuthorityServer.Web.Endpoints;
 
@@ -26,8 +27,13 @@ namespace TrackHub.AuthorityServer.Web.Endpoints;
 public sealed class TokenHandler(
     IClientReader clientReader,
     IUserReader userReader,
-    IDriverCredentialReader driverCredentialReader)
+    IDriverCredentialReader driverCredentialReader,
+    IServiceClientPermissionReader serviceClientPermissionReader)
 {
+    // Optional client-credentials request parameter a service client with grants on more than one
+    // account uses to pick which tenant the token is issued for.
+    internal const string AccountIdParameter = "account_id";
+
     /// <summary>
     /// Handles the token exchange request.
     /// </summary>
@@ -107,6 +113,29 @@ public sealed class TokenHandler(
             identity.AddClaim(new Claim("principal_type", "ServiceClient")
                 .SetDestinations(OpenIddictConstants.Destinations.AccessToken));
 
+            // Bind the token to the tenant the client's permission grants declare, so an
+            // account-scoped partner credential cannot reach another account's data.
+            var accountScope = await serviceClientPermissionReader.GetAccountScopeAsync(request.ClientId, context.RequestAborted);
+            var (accountId, accountError) = ResolveServiceClientAccount(
+                request.GetParameter(AccountIdParameter)?.ToString(), accountScope);
+
+            if (accountError is not null)
+            {
+                return Results.Forbid(
+                    authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme],
+                    properties: new AuthenticationProperties(new Dictionary<string, string?>
+                    {
+                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = OpenIddictConstants.Errors.InvalidRequest,
+                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = accountError
+                    }));
+            }
+
+            if (accountId.HasValue)
+            {
+                identity.AddClaim(new Claim("account_id", accountId.Value.ToString())
+                    .SetDestinations(OpenIddictConstants.Destinations.AccessToken));
+            }
+
             var principal = new ClaimsPrincipal(identity);
 
             // Set the scopes granted to the client application
@@ -123,6 +152,42 @@ public sealed class TokenHandler(
         {
             throw new InvalidOperationException("The specified grant type is not supported.");
         }
+    }
+
+    // Decides the account claim of a client-credentials token from the client's effective grants.
+    //   * A client holding a declared platform-wide grant stays UNSCOPED (no claim): a cross-account
+    //     grant matches regardless of the token's account, and Security's matcher rejects an
+    //     account-bearing token against an unbound grant — so claiming an account here would break
+    //     every internal identity (router/syncworker/security/geofence/trip clients).
+    //   * A client whose grants all name the same single account gets bound to it.
+    //   * A client with grants on several accounts is ambiguous and must name the tenant it wants
+    //     through the account_id request parameter; issuing an arbitrary one would silently give a
+    //     partner the wrong tenant.
+    //   * A client with no account-bound grant at all stays unscoped, as before.
+    internal static (Guid? AccountId, string? Error) ResolveServiceClientAccount(
+        string? requestedAccountId,
+        ServiceClientAccountScopeVm scope)
+    {
+        if (!string.IsNullOrWhiteSpace(requestedAccountId))
+        {
+            if (!Guid.TryParse(requestedAccountId, out var requested))
+            {
+                return (null, "The account_id parameter is not a valid identifier.");
+            }
+
+            return scope.AccountIds.Contains(requested)
+                ? (requested, null)
+                : (null, "The client has no active permission grant for the requested account.");
+        }
+
+        if (scope.AllowsCrossAccount || scope.AccountIds.Count == 0)
+        {
+            return (null, null);
+        }
+
+        return scope.AccountIds.Count == 1
+            ? (scope.AccountIds.Single(), null)
+            : (null, "The client holds grants on several accounts; specify the account_id parameter.");
     }
 
     // Replaces the role claim with the user's current role (most privileged, from security.user_role)

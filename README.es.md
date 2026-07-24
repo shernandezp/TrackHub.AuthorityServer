@@ -82,6 +82,46 @@ Se utiliza el flujo de **Authorization Code Flow con PKCE** como método de aute
 ### Client Credentials
 El flujo de **Client Credentials** se utiliza como método de autenticación para servicios.
 
+Los tokens emitidos por este flujo incluyen `sub`, `role=service`, `client_id`,
+`principal_type=ServiceClient` y —cuando el cliente está asociado a un tenant— el claim
+`account_id`. La cuenta **no** la envía el llamante: se deriva de las filas activas y vigentes del
+cliente en `security.service_client_permissions`, de modo que una credencial de socio no puede
+ampliar su propio alcance.
+
+| Permisos vigentes del cliente | Claim `account_id` |
+|---|---|
+| Al menos un permiso con `allowcrossaccount` (identidades internas de la plataforma: `router_client`, `syncworker_client`, `security_client`, `geofence_client`, `trip_client`) | **No se emite** — el token queda sin cuenta, que es contra lo que coincide un permiso global. |
+| Permisos que nombran exactamente una cuenta (caso socio/TMS) | Se emite automáticamente para esa cuenta. |
+| Permisos que nombran varias cuentas | **Requiere el parámetro `account_id`** (ver abajo). |
+| Ningún permiso asociado a una cuenta | No se emite. |
+
+#### El parámetro opcional `account_id`
+
+Un cliente de servicio cuyos permisos abarcan **más de una cuenta** es ambiguo: el endpoint de token
+no adivina el tenant, porque emitir uno arbitrario apuntaría en silencio al cliente equivocado. Ese
+tipo de cliente debe indicar el tenant en cada solicitud de token:
+
+```bash
+curl -X POST https://<authority>/connect/token \
+  -d grant_type=client_credentials \
+  -d client_id=<partner_client> \
+  -d client_secret=<secret> \
+  -d scope=service_scope \
+  -d account_id=<guid-de-cuenta>
+```
+
+El parámetro es **opcional e innecesario para clientes de una sola cuenta y para los internos de la
+plataforma**, y sólo puede restringir, nunca ampliar: la cuenta solicitada debe corresponder a un
+permiso activo del propio cliente. El endpoint responde `invalid_request` cuando el valor no es un
+identificador válido, cuando el cliente no tiene un permiso activo para la cuenta solicitada, o
+cuando un cliente multicuenta lo omite. Este último caso es un rechazo deliberado, no una falla:
+agregue el parámetro o asigne al cliente permisos de una sola cuenta.
+
+> **Aprovisionamiento de un cliente socio:** siembre sus filas en
+> `security.service_client_permissions` **con** `accountid` y **sin** `allowcrossaccount`, y vuelva
+> a ejecutar `db-init`. Un cliente sembrado como interno (`allowcrossaccount = true`) no recibe
+> claim de cuenta y se trata como identidad de plataforma.
+
 ## Configuración
 
 La configuración estándar de estos dos métodos se encuentra en las siguientes clases:

@@ -34,7 +34,11 @@ public class TokenHandlerRoleClaimTests
     public void SetUp()
     {
         _userReader = new Mock<IUserReader>();
-        _handler = new TokenHandler(Mock.Of<IClientReader>(), _userReader.Object, Mock.Of<IDriverCredentialReader>());
+        _handler = new TokenHandler(
+            Mock.Of<IClientReader>(),
+            _userReader.Object,
+            Mock.Of<IDriverCredentialReader>(),
+            Mock.Of<IServiceClientPermissionReader>());
     }
 
     private static ClaimsPrincipal UserPrincipal(Guid userId, string? currentRoleClaim)
