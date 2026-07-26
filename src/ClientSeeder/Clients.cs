@@ -33,6 +33,43 @@ internal class Clients
         var json = File.ReadAllText(filePath);
         return JsonSerializer.Deserialize<Clients>(json, JsonSerializerOptions) ?? new Clients();
     }
+
+    /// <summary>
+    /// Loads the base catalog plus every <c>clients.*.json</c> overlay next to it (sorted by
+    /// file name). Overlays are additive; an overlay entry with the same scope name/client id
+    /// replaces the base entry. No overlay files ship with this repository — a deployment or
+    /// distribution drops them next to <c>clients.json</c> to register additional identities
+    /// without editing the base catalog.
+    /// </summary>
+    public static Clients LoadWithOverlays(string filePath)
+    {
+        var clients = LoadFromFile(filePath);
+
+        var directory = Path.GetDirectoryName(Path.GetFullPath(filePath)) ?? ".";
+        var baseName = Path.GetFileNameWithoutExtension(filePath);
+        var overlays = Directory.EnumerateFiles(directory, $"{baseName}.*.json")
+            .Where(path => !string.Equals(Path.GetFileName(path), Path.GetFileName(filePath), StringComparison.OrdinalIgnoreCase))
+            .OrderBy(path => path, StringComparer.OrdinalIgnoreCase);
+
+        foreach (var overlayPath in overlays)
+        {
+            var overlay = LoadFromFile(overlayPath);
+            clients = new Clients
+            {
+                Scopes = MergeBy(clients.Scopes, overlay.Scopes, s => s.Name),
+                PKCEClients = MergeBy(clients.PKCEClients, overlay.PKCEClients, c => c.ClientId),
+                ServiceClients = MergeBy(clients.ServiceClients, overlay.ServiceClients, c => c.ClientId),
+            };
+        }
+
+        return clients;
+    }
+
+    private static T[] MergeBy<T>(T[] baseline, T[] overlay, Func<T, string> key)
+    {
+        var overlayKeys = overlay.Select(key).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        return [.. baseline.Where(item => !overlayKeys.Contains(key(item))), .. overlay];
+    }
 }
 
 internal class Scope
