@@ -13,6 +13,7 @@
 //  limitations under the License.
 //
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using OpenIddict.Abstractions;
 using TrackHub.AuthorityServer.Infrastructure;
@@ -26,12 +27,42 @@ internal class Seeder(IServiceProvider serviceProvider)
         using var scope = serviceProvider.CreateScope();
 
         var databaseContext = scope.ServiceProvider.GetRequiredService<AuthorityDbContext>();
-        databaseContext.Database.EnsureCreated();
+        await EnsureSchemaPresentAsync(databaseContext, cancellationToken);
 
         var clients = Clients.LoadFromFile("clients.json");
 
         await PopulateScopes(scope, clients.Scopes, cancellationToken);
         await PopulateInternalApps(scope, clients.PKCEClients, clients.ServiceClients, cancellationToken);
+    }
+
+    /// <summary>
+    /// Verifies the OpenIddict schema exists before seeding, and fails with an actionable message if
+    /// it does not.
+    /// </summary>
+    /// <remarks>
+    /// The OpenIddict schema is owned by this project's <c>AuthorityDbContext</c> migrations and is
+    /// applied as its own step in the documented install sequence (INSTALL.md §4), against the
+    /// Security database. Seeding is therefore a pure data operation: it never creates tables, and it
+    /// stops with a diagnostic rather than failing later on a missing relation.
+    ///
+    /// A database whose OpenIddict tables exist without a <c>__EFMigrationsHistory</c> row must be
+    /// baselined rather than migrated; the message below carries both routes.
+    /// </remarks>
+    private static async Task EnsureSchemaPresentAsync(AuthorityDbContext context, CancellationToken cancellationToken)
+    {
+        var applied = await context.Database.GetAppliedMigrationsAsync(cancellationToken);
+        var pending = await context.Database.GetPendingMigrationsAsync(cancellationToken);
+
+        if (!applied.Any() && pending.Any())
+        {
+            throw new InvalidOperationException(
+                "The OpenIddict schema has not been migrated. Run: " +
+                "dotnet ef database update --project src/Infrastructure --startup-project src/Web --context AuthorityDbContext. " +
+                "If this deployment predates the migration (its OpenIddict tables were created by the old " +
+                "EnsureCreated call and __EFMigrationsHistory is empty), baseline it instead with: " +
+                "dotnet ef migrations script --idempotent, or insert the InitialCreate row into " +
+                "__EFMigrationsHistory so the existing tables are adopted rather than recreated.");
+        }
     }
 
     private static async ValueTask PopulateScopes(IServiceScope scope, Scope[] scopes, CancellationToken cancellationToken)

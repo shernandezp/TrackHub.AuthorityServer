@@ -13,19 +13,14 @@
 //  limitations under the License.
 //
 
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Common.Domain.Constants;
-using TrackHub.AuthorityServer.Infrastructure.Entities;
+namespace TrackHub.AuthorityServer.Domain.Models;
 
-namespace TrackHub.AuthorityServer.Infrastructure.Configurations;
-
-public class RoleConfiguration : IEntityTypeConfiguration<Role>
-{
-    public void Configure(EntityTypeBuilder<Role> builder)
-    {
-        builder.ToTable(name: TableMetadata.Role, schema: SchemaMetadata.Security, t => t.ExcludeFromMigrations());
-        builder.HasKey(x => x.RoleId);
-        builder.Property(x => x.RoleId).HasColumnName("id");
-        builder.Property(x => x.Name).HasColumnName("name");
-    }
-}
+/// <summary>
+/// The account reach a service client's currently effective permission grants declare.
+/// <paramref name="AllowsCrossAccount"/> means at least one grant is a declared platform-wide grant,
+/// so the token must stay unscoped (no account claim) for those grants to match.
+/// <paramref name="AccountIds"/> lists the distinct accounts the client's account-bound grants name.
+/// </summary>
+public record struct ServiceClientAccountScopeVm(
+    bool AllowsCrossAccount,
+    IReadOnlyCollection<Guid> AccountIds);

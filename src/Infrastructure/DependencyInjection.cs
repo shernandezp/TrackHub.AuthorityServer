@@ -35,6 +35,7 @@ public static class DependencyInjection
 
         services.AddScoped<ISecurityDbContext>(provider => provider.GetRequiredService<SecurityDbContext>());
         services.AddScoped<IClientReader, ClientReader>();
+        services.AddScoped<IServiceClientPermissionReader, ServiceClientPermissionReader>();
         services.AddScoped<IUserReader, UserReader>();
         services.AddScoped<IUserWriter, UserWriter>();
         services.AddScoped<IDriverCredentialReader, DriverCredentialReader>();

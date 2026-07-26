@@ -12,7 +12,7 @@ using TrackHub.AuthorityServer.Infrastructure;
 namespace TrackHub.AuthorityServer.Infrastructure.Migrations.SecurityDb
 {
     [DbContext(typeof(SecurityDbContext))]
-    [Migration("20260720012211_InitialCreate")]
+    [Migration("20260722030800_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -58,7 +58,10 @@ namespace TrackHub.AuthorityServer.Infrastructure.Migrations.SecurityDb
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("clients", "security");
+                    b.ToTable("clients", "security", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
                 });
 
             modelBuilder.Entity("TrackHub.AuthorityServer.Infrastructure.Entities.DriverCredential", b =>
@@ -127,7 +130,10 @@ namespace TrackHub.AuthorityServer.Infrastructure.Migrations.SecurityDb
 
                     b.HasKey("DriverCredentialId");
 
-                    b.ToTable("driver_credentials", "security");
+                    b.ToTable("driver_credentials", "security", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
                 });
 
             modelBuilder.Entity("TrackHub.AuthorityServer.Infrastructure.Entities.Role", b =>
@@ -146,7 +152,10 @@ namespace TrackHub.AuthorityServer.Infrastructure.Migrations.SecurityDb
 
                     b.HasKey("RoleId");
 
-                    b.ToTable("roles", "security");
+                    b.ToTable("roles", "security", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
                 });
 
             modelBuilder.Entity("TrackHub.AuthorityServer.Infrastructure.Entities.User", b =>
@@ -208,7 +217,10 @@ namespace TrackHub.AuthorityServer.Infrastructure.Migrations.SecurityDb
 
                     b.HasKey("UserId");
 
-                    b.ToTable("users", "security");
+                    b.ToTable("users", "security", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
                 });
 
             modelBuilder.Entity("TrackHub.AuthorityServer.Infrastructure.Entities.UserRole", b =>
@@ -223,7 +235,10 @@ namespace TrackHub.AuthorityServer.Infrastructure.Migrations.SecurityDb
 
                     b.HasKey("UserId", "RoleId");
 
-                    b.ToTable("user_role", "security");
+                    b.ToTable("user_role", "security", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
                 });
 
             modelBuilder.Entity("TrackHub.AuthorityServer.Infrastructure.Entities.Client", b =>

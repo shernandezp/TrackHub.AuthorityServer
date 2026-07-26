@@ -12,7 +12,7 @@ using TrackHub.AuthorityServer.Infrastructure;
 namespace TrackHub.AuthorityServer.Infrastructure.Migrations
 {
     [DbContext(typeof(AuthorityDbContext))]
-    [Migration("20260720012202_InitialCreate")]
+    [Migration("20260722030751_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
