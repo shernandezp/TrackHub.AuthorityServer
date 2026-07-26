@@ -29,7 +29,7 @@ internal class Seeder(IServiceProvider serviceProvider)
         var databaseContext = scope.ServiceProvider.GetRequiredService<AuthorityDbContext>();
         await EnsureSchemaPresentAsync(databaseContext, cancellationToken);
 
-        var clients = Clients.LoadFromFile("clients.json");
+        var clients = Clients.LoadWithOverlays("clients.json");
 
         await PopulateScopes(scope, clients.Scopes, cancellationToken);
         await PopulateInternalApps(scope, clients.PKCEClients, clients.ServiceClients, cancellationToken);

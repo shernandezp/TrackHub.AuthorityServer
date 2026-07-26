@@ -13,6 +13,7 @@
 //  limitations under the License.
 //
 
+using Common.Application.Extensions;
 using Microsoft.Extensions.Configuration;
 using TrackHub.AuthorityServer.Domain.Interfaces;
 using TrackHub.AuthorityServer.Infrastructure;
@@ -40,6 +41,10 @@ public static class DependencyInjection
         services.AddScoped<IUserWriter, UserWriter>();
         services.AddScoped<IDriverCredentialReader, DriverCredentialReader>();
         services.AddScoped<IDriverCredentialWriter, DriverCredentialWriter>();
+
+        // Module discovery seam: registers any IServiceModule implementations shipped in
+        // this assembly (none in this repository).
+        services.AddDiscoveredModules(typeof(SecurityDbContext).Assembly, configuration);
 
         return services;
     }
