@@ -40,28 +40,32 @@ internal class Seeder(IServiceProvider serviceProvider)
     /// it does not.
     /// </summary>
     /// <remarks>
-    /// The OpenIddict schema is owned by this project's <c>AuthorityDbContext</c> migrations and is
-    /// applied as its own step in the documented install sequence (INSTALL.md §4), against the
-    /// Security database. Seeding is therefore a pure data operation: it never creates tables, and it
-    /// stops with a diagnostic rather than failing later on a missing relation.
-    ///
-    /// A database whose OpenIddict tables exist without a <c>__EFMigrationsHistory</c> row must be
-    /// baselined rather than migrated; the message below carries both routes.
+    /// Seeding is a pure data operation over the OpenIddict tables: it never creates tables, and it
+    /// stops with a diagnostic rather than failing later on a missing relation. What matters is that
+    /// the tables exist — not how they were created (EF migrations in development, hand-run SQL in
+    /// production, or the old EnsureCreated call) — so this probes the schema itself.
     /// </remarks>
     private static async Task EnsureSchemaPresentAsync(AuthorityDbContext context, CancellationToken cancellationToken)
     {
-        var applied = await context.Database.GetAppliedMigrationsAsync(cancellationToken);
-        var pending = await context.Database.GetPendingMigrationsAsync(cancellationToken);
-
-        if (!applied.Any() && pending.Any())
+        var connection = context.Database.GetDbConnection();
+        await context.Database.OpenConnectionAsync(cancellationToken);
+        try
         {
-            throw new InvalidOperationException(
-                "The OpenIddict schema has not been migrated. Run: " +
-                "dotnet ef database update --project src/Infrastructure --startup-project src/Web --context AuthorityDbContext. " +
-                "If this deployment predates the migration (its OpenIddict tables were created by the old " +
-                "EnsureCreated call and __EFMigrationsHistory is empty), baseline it instead with: " +
-                "dotnet ef migrations script --idempotent, or insert the InitialCreate row into " +
-                "__EFMigrationsHistory so the existing tables are adopted rather than recreated.");
+            await using var command = connection.CreateCommand();
+            command.CommandText = "SELECT to_regclass('\"OpenIddictApplications\"') IS NOT NULL";
+            var exists = (bool)(await command.ExecuteScalarAsync(cancellationToken) ?? false);
+            if (!exists)
+            {
+                throw new InvalidOperationException(
+                    "The OpenIddict tables were not found in the Security database. Create the schema " +
+                    "first — apply the AuthorityDbContext migration script (dotnet ef migrations script " +
+                    "--idempotent --project src/Infrastructure --startup-project src/Web --context " +
+                    "AuthorityDbContext) or run: dotnet ef database update. Seeding never creates tables.");
+            }
+        }
+        finally
+        {
+            await context.Database.CloseConnectionAsync();
         }
     }
 
