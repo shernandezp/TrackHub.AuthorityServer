@@ -146,13 +146,17 @@ app.MapPost("~/logout", async (HttpContext context) =>
     return Results.Ok();
 });
 
+// RP-initiated logout. OpenIddict owns the redirect: it has already validated
+// post_logout_redirect_uri against the registered URIs of the client applications and
+// echoes back state, so the returned SignOutResult sends the user agent there. When the
+// request carries no post_logout_redirect_uri, RedirectUri below is used instead.
 app.MapGet("~/logout", async (HttpContext context) =>
 {
     await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-    await context.SignOutAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
-    var postLogoutRedirectUri = context.Request.Query["post_logout_redirect_uri"].ToString();
-    return Results.Redirect(postLogoutRedirectUri);
+    return Results.SignOut(
+        new AuthenticationProperties { RedirectUri = "/" },
+        [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
 });
 
 // POST /revoke is handled by OpenIddict's revocation endpoint (SetRevocationEndpointUris):
